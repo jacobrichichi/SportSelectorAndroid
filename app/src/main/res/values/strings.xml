@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Sports Data</string>
+
+    <string-array name = "typeList">
+        <item>Teams</item>
+        <item>Players</item>
+    </string-array>
+
+    <string-array name = "teamNames">
+        <item>Jets</item>
+        <item>Giants</item>
+    </string-array>
+</resources>
