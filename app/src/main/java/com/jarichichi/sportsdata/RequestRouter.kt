@@ -1,7 +1,11 @@
 package com.jarichichi.sportsdata
 
+import android.R
 import android.content.Context
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import androidx.appcompat.view.menu.MenuView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -11,13 +15,31 @@ import com.android.volley.toolbox.Volley
 
 class RequestRouter {
     companion object{
-        fun getAllTeams(context: Context){
-            var teams : String
+        fun getAllTeams(context: Context, team_drop: Spinner){
+            var teams : MutableList<String> = mutableListOf()
             Log.d("Router", "Router")
 
             val getRequest = JsonObjectRequest(Request.Method.GET, Routing_Constants.URL_GETALLTEAMS, null,
                 Response.Listener{ response ->
-                    Log.d("Success", response.toString())
+                    if(!response.getBoolean("error")){
+                        val resArray = response.getJSONArray("data")
+
+
+                        for(i in 0 until resArray.length()) {
+                            teams.add(resArray.getJSONObject(i).get("TeamName").toString())
+                        }
+
+                        val aAdapter = ArrayAdapter(
+                            context,
+                            R.layout.simple_spinner_item,
+                            teams
+                        ).also { adapter ->
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            team_drop.adapter = adapter
+                        }
+
+
+                    }
                 },
                 Response.ErrorListener{ error->
                     Log.d("Router error", error.toString())

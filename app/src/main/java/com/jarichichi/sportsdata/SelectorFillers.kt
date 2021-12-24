@@ -16,16 +16,8 @@ class SelectorFillers {
             first_text.text = "From the "
 
             //HERE IS WHERE DATABASE NEEDS TO BE QUERIED FOR TEAM NAMES
-            RequestRouter.getAllTeams(context)
+            RequestRouter.getAllTeams(context, team_drop)
 
-            ArrayAdapter.createFromResource(
-                context,
-                R.array.teamNames,
-                android.R.layout.simple_spinner_item
-            ).also { adapter ->
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                team_drop.adapter = adapter
-            }
         }
     }
 
