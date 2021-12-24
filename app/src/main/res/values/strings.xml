@@ -4,6 +4,7 @@
     <string-array name = "typeList">
         <item>Teams</item>
         <item>Players</item>
+        <item>Positions</item>
     </string-array>
 
     <string-array name = "teamNames">

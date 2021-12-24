@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
         selectorList = SelectorList()
 
-        selectorsAdapter = SelectorsAdapter(this, 1, selectorList.selectors)
+        selectorsAdapter = SelectorsAdapter(this, 0, selectorList.selectors)
         selectorsView.adapter = selectorsAdapter
 
         selectorsView.setHasFixedSize(true)
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         selectorsView.layoutManager = GridLayoutManager(this, 1)
 
         addButton.setOnClickListener {
-            var types : List<String> = listOf("TEAM_SELECTION", "PLAYER_SELECTION")
+            var types : List<String> = listOf("SELECT_TEAM", "SELECT_PLAYER", "SELECT_POSITION")
 
             /*if(cards.size == 1) {
                 types.add("TEAM_SELECTION")
@@ -64,14 +64,19 @@ class MainActivity : AppCompatActivity() {
             typeBuilder.setPositiveButton("OK"){
                 dialog, which ->
                     if(type_spinner.getSelectedItem() == "Teams"){
-                        selectorList.addFirstSelector("Teams")
+                        selectorList.addNewSelector("SELECT_TEAM", 1)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
 
                     }
 
-                    else{
-                        selectorList.addFirstSelector("Player")
+                    else if (type_spinner.getSelectedItem() == "Players"){
+                        selectorList.addNewSelector("SELECT_PLAYER", 3)
+                        selectorsAdapter.numSelectors += 1
+                        selectorsAdapter.notifyDataSetChanged()
+                    }
+                    else if (type_spinner.getSelectedItem() == "Positions"){
+                        selectorList.addNewSelector("SELECT_POSITION", 2)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }

@@ -11,16 +11,16 @@ class SelectorList {
     }
 
 
-    fun addNewSelector(adapter_type: String){
-        Log.d("TAG", "AddNewSelector")
-        selectors.add(Selector("Teams", listOf("")))
+    fun addNewSelector(adapter_type: String, num_spinners: Int){
+        if(num_spinners == 1) {
+            selectors.add(OneSelector(adapter_type, listOf("")))
+        }
+        else if(num_spinners == 2) {
+            selectors.add(TwoSelector(adapter_type, listOf("")))
+        }
+        else{
+            selectors.add(ThreeSelector(adapter_type, listOf("")))
+        }
     }
-
-    fun addFirstSelector(adapter_type: String){
-        Log.d("TAG", "AddNewSelector")
-        selectors.add(Selector("Teams", listOf("")))
-    }
-
-
 
 }
