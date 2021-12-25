@@ -7,18 +7,20 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import android.app.AlertDialog
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.jarichichi.sportsdata.Constants.Companion.SELECTORS_KEY
 import models.Selector
 import models.SelectorList
 
 class MainActivity : AppCompatActivity() {
     private lateinit var selectorsView: RecyclerView
-    private lateinit var spinner : Spinner
     private lateinit var addButton: Button
+    private lateinit var submitButton: Button
     private lateinit var selectorList: SelectorList
     private lateinit var selectorsAdapter: SelectorsAdapter
 
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         selectorsView = findViewById(R.id.selectors)
         addButton = findViewById(R.id.adding_button)
+        submitButton = findViewById(R.id.submit_button)
 
         selectorList = SelectorList()
 
@@ -87,6 +90,16 @@ class MainActivity : AppCompatActivity() {
             val alertDialog = typeBuilder.create()
             alertDialog.show()
 
+
+        }
+
+        submitButton.setOnClickListener {
+            var selectors = selectorsAdapter.getSelectors().toTypedArray();
+
+            val intent = Intent(this, StatisticsActivity::class.java).apply {
+                putExtra(SELECTORS_KEY, selectors)
+            }
+            startActivity(intent)
 
         }
 

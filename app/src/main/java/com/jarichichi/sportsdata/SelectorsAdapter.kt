@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
@@ -46,17 +47,36 @@ class SelectorsAdapter(
 
     override fun getItemCount() = numSelectors
 
+    fun getSelectors() = cards
+
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bind(position: Int) {
             if(cards.size > 0){
 
-                val current : Selector = cards.get(cards.size-1)
+                val current : Selector = cards.get(position)
 
 
-                if(current.selectorType == "SELECT_TEAM") {
-                    SelectorFillers.selectTeam(itemView, context)
+                if(current.selectorType == "SELECT_TEAM" && current.itemsSelected[0] == "") {
+                    val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
+                    team_drop.onItemSelectedListener = setFirstItemSelected(current)
+                    SelectorFillers.selectTeam(itemView, context, current)
                 }
+            }
+        }
+
+        fun setFirstItemSelected(current : Selector) : AdapterView.OnItemSelectedListener {
+            return object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?,
+                                            position: Int, id: Long) {
+                    current.itemsSelected[0] = parent?.getItemAtPosition(position).toString()
+
+                }
+
             }
         }
     }

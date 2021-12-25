@@ -1,4 +1,4 @@
 package models
 
-class OneSelector (selectorType: String = "", itemsSelected: List<String> = listOf(""))
+class OneSelector (selectorType: String = "", itemsSelected: Array<String> = arrayOf(""))
                 : Selector(selectorType, itemsSelected)

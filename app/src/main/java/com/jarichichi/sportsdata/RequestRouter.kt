@@ -12,18 +12,21 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import models.Selector
 
 class RequestRouter {
     companion object{
-        fun getAllTeams(context: Context, team_drop: Spinner){
+        fun getAllTeams(context: Context, team_drop: Spinner, current : Selector){
             var teams : MutableList<String> = mutableListOf()
+            var curr : Selector = current
             Log.d("Router", "Router")
 
-            val getRequest = JsonObjectRequest(Request.Method.GET, Routing_Constants.URL_GETALLTEAMS, null,
+            val getRequest = JsonObjectRequest(Request.Method.GET, Constants.URL_GETALLTEAMS, null,
                 Response.Listener{ response ->
                     if(!response.getBoolean("error")){
                         val resArray = response.getJSONArray("data")
-
+                        val typ = current.selectorType
+                        val itemsSelected = current.itemsSelected
 
                         for(i in 0 until resArray.length()) {
                             teams.add(resArray.getJSONObject(i).get("TeamName").toString())
