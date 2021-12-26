@@ -13,6 +13,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import models.Selector
+import org.json.JSONObject
 
 class RequestRouter {
     companion object{
@@ -50,6 +51,37 @@ class RequestRouter {
             )
 
             RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
+        }
+
+        fun sendCustomQuery(context : Context, selectors: List<Selector>){
+
+            val getRequest = object : StringRequest(Request.Method.POST, Constants.URL_CUSTOMQUERY,
+                Response.Listener{ response -> Log.d("Success", response.toString())},
+                Response.ErrorListener{ error-> }
+            ) {
+                override fun getParams(): Map<String, String>{
+
+                    var selectorsMap = HashMap<String, String>()
+                    var i = 0
+                    for(selector in selectors){
+                        selectorsMap.put("selectorType" + i.toString(), selector.selectorType)
+
+                        var j = 0
+                        for(item in selector.itemsSelected){
+                            selectorsMap.put("itemsSelected" + i.toString() + j.toString(), item)
+                            j+=1
+                        }
+
+                        i += 1
+
+                    }
+
+                    return selectorsMap
+                }
+            }
+
+            RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
+
         }
 
     }

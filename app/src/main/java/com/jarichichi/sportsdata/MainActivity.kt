@@ -94,11 +94,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         submitButton.setOnClickListener {
-            var selectors = selectorsAdapter.getSelectors().toTypedArray();
+            var selectors = selectorsAdapter.getSelectors()
+
+            //Logic to begin creating the SQL Query + send it to the backend
+
+           SelectorFillers.createCustomQuery(this, selectors)
 
             val intent = Intent(this, StatisticsActivity::class.java).apply {
-                putExtra(SELECTORS_KEY, selectors)
+                //putExtra(SELECTORS_KEY, selectors)
             }
+
             startActivity(intent)
 
         }

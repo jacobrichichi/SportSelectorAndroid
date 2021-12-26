@@ -20,6 +20,32 @@ class SelectorFillers {
             RequestRouter.getAllTeams(context, team_drop, current)
 
         }
+
+        fun createCustomQuery(context: Context, selectors: List<Selector>) {
+            var query = "SELECT * FROM "
+
+           /* val initial = selectors.get(0)
+
+            if(initial.selectorType == "SELECT_TEAM"){
+                query += "Team "
+                query += "WHERE TeamName = " + initial.itemsSelected[0]
+            }
+            else if(initial.selectorType == "SELECT_PLAYER"){
+                query += "Player "
+                query += "WHERE PlayerName = " + initial.itemsSelected[2]
+            }
+            else if(initial.selectorType == "SELECT_POSITION"){
+                query += "Player "
+                query += "WHERE Position = " + initial.itemsSelected[0]
+            }*/
+
+            RequestRouter.sendCustomQuery(context, selectors)
+
+           // RequestRouter.sendCustomQuery(context, query)
+
+
+        }
+
     }
 
 }
