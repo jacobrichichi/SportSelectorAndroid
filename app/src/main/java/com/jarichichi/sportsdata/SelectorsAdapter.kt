@@ -59,13 +59,33 @@ class SelectorsAdapter(
 
                 if(current.selectorType == "SELECT_TEAM" && current.itemsSelected[0] == "") {
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
-                    team_drop.onItemSelectedListener = setFirstItemSelected(current)
+                    team_drop.onItemSelectedListener = setItemSelected(current, 0)
+                    SelectorFillers.selectTeam(itemView, context, current)
+                }
+
+                else if(current.selectorType == "SELECT_POSITION" && current.itemsSelected[0] == "") {
+                    val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_one)
+                    val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_two)
+                    position_drop.onItemSelectedListener = setItemSelected(current, 0)
+                    team_drop.onItemSelectedListener = setItemSelected(current, 1)
+
+                    SelectorFillers.selectPosition(itemView, context, current)
+                }
+
+                else if(current.selectorType == "SELECT_PLAYER" && current.itemsSelected[0] == "") {
+                    val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_one)
+                    val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_two)
+                    val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_three)
+                    team_drop.onItemSelectedListener = setItemSelected(current, 0)
+                    position_drop.onItemSelectedListener = setItemSelected(current, 1)
+                    player_drop.onItemSelectedListener = setItemSelected(current, 2)
+
                     SelectorFillers.selectTeam(itemView, context, current)
                 }
             }
         }
 
-        fun setFirstItemSelected(current : Selector) : AdapterView.OnItemSelectedListener {
+        fun setItemSelected(current : Selector, idx: Int) : AdapterView.OnItemSelectedListener {
             return object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -73,7 +93,8 @@ class SelectorsAdapter(
 
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?,
                                             position: Int, id: Long) {
-                    current.itemsSelected[0] = parent?.getItemAtPosition(position).toString()
+
+                    current.itemsSelected[idx] = parent?.getItemAtPosition(position).toString()
 
                 }
 

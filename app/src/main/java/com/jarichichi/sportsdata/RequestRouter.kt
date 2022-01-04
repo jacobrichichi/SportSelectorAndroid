@@ -2,10 +2,12 @@ package com.jarichichi.sportsdata
 
 import android.R
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.appcompat.view.menu.MenuView
+import androidx.core.content.ContextCompat.startActivity
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -13,6 +15,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import models.Selector
+import org.json.JSONArray
 import org.json.JSONObject
 
 class RequestRouter {
@@ -56,21 +59,32 @@ class RequestRouter {
         fun sendCustomQuery(context : Context, selectors: List<Selector>){
 
             val getRequest = object : StringRequest(Request.Method.POST, Constants.URL_CUSTOMQUERY,
-                Response.Listener{ response -> Log.d("Success", response.toString())},
-                Response.ErrorListener{ error-> }
-            ) {
+                        Response.Listener{ response ->
+                            val intent = Intent(context, StatisticsActivity::class.java).apply {
+                                putExtra(Constants.SELECTORS_KEY, response)
+                            }
+
+                            context.startActivity(intent) },
+                        Response.ErrorListener{ error-> Log.d("fail", error.toString())}
+                ) {
                 override fun getParams(): Map<String, String>{
 
                     var selectorsMap = HashMap<String, String>()
                     var i = 0
+
+                    selectorsMap.put("numSelectors", selectors.size.toString())
                     for(selector in selectors){
                         selectorsMap.put("selectorType" + i.toString(), selector.selectorType)
 
                         var j = 0
                         for(item in selector.itemsSelected){
+
                             selectorsMap.put("itemsSelected" + i.toString() + j.toString(), item)
                             j+=1
                         }
+
+                        //Number of items corresponding to the ith selector
+                        selectorsMap.put("numItems" + i.toString(), j.toString())
 
                         i += 1
 
@@ -81,7 +95,6 @@ class RequestRouter {
             }
 
             RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
-
         }
 
     }

@@ -97,14 +97,7 @@ class MainActivity : AppCompatActivity() {
             var selectors = selectorsAdapter.getSelectors()
 
             //Logic to begin creating the SQL Query + send it to the backend
-
-           SelectorFillers.createCustomQuery(this, selectors)
-
-            val intent = Intent(this, StatisticsActivity::class.java).apply {
-                //putExtra(SELECTORS_KEY, selectors)
-            }
-
-            startActivity(intent)
+            SelectorFillers.createCustomQuery(this, selectors)
 
         }
 

@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/drawable/vertical_divider.xml" value="0.12864583333333332" />
+        <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/activity_statistics.xml" value="0.16530797101449277" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/add_button.xml" value="0.10520833333333333" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/one_selector.xml" value="0.22" />
@@ -11,6 +12,7 @@
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/selector_type_modal.xml" value="0.22" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/team_drop_down.xml" value="0.18" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/team_selector.xml" value="0.2" />
+        <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/test_scrolling_table.xml" value="0.5" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/three_selector.xml" value="0.33" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/layout/two_selector.xml" value="0.15" />
         <entry key="..\:/Users/jacob/AndroidStudioProjects/SportsData/app/src/main/res/xml/network_security_config.xml" value="0.1" />
