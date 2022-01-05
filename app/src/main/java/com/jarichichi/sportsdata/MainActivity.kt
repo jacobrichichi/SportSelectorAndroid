@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                         selectorsAdapter.notifyDataSetChanged()
                     }
                     else if (type_spinner.getSelectedItem() == "Positions"){
-                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(6, 4),  2)
+                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(1, 4),  2)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }

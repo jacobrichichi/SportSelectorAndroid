@@ -84,7 +84,7 @@ class SelectorsAdapter(
                     position_drop.onItemSelectedListener = setItemSelected(current, 1)
                     player_drop.onItemSelectedListener = setItemSelected(current, 2)
 
-                    SelectorFillers.selectTeam(itemView, context, current)
+                    SelectorFillers.selectPlayer(itemView, context, current)
                 }
             }
         }

@@ -42,7 +42,11 @@ class SelectorFillers {
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 position_drop.adapter = adapter
             }
-            
+
+
+        }
+
+        fun selectPlayer(itemView: View, context: Context, current : Selector){
 
         }
 
