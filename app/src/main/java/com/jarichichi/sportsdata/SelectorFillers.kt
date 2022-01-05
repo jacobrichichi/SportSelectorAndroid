@@ -29,7 +29,7 @@ class SelectorFillers {
 
             first_text.text = "How the position "
             second_text.text = " optionally, from the "
-            third_text.text = " when "
+            third_text.text = " plays "
 
             RequestRouter.getAllTeams(context, team_drop, current)
             val positions = arrayOf("QB", "WR","RB", "TE")

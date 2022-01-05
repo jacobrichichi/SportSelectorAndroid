@@ -93,7 +93,6 @@ class RequestRouter {
                             else{
                                 view.setTextColor(Color.BLACK)
                             }
-
                             return view
                         }
                     }.also { adapter ->
