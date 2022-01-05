@@ -1,6 +1,7 @@
 package com.jarichichi.sportsdata
 
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import models.Selector
+
+
+
 
 
 class SelectorsAdapter(
@@ -57,13 +61,13 @@ class SelectorsAdapter(
                 val current : Selector = cards.get(position)
 
 
-                if(current.selectorType == "SELECT_TEAM" && current.itemsSelected[0] == "") {
+                if(current.selectorType == "SELECT_TEAM" && current.itemsSelected[0].get(0) == "") {
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
                     team_drop.onItemSelectedListener = setItemSelected(current, 0)
                     SelectorFillers.selectTeam(itemView, context, current)
                 }
 
-                else if(current.selectorType == "SELECT_POSITION" && current.itemsSelected[0] == "") {
+                else if(current.selectorType == "SELECT_POSITION" && current.itemsSelected[0].get(0) == "") {
                     val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_one)
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_two)
                     position_drop.onItemSelectedListener = setItemSelected(current, 0)
@@ -72,7 +76,7 @@ class SelectorsAdapter(
                     SelectorFillers.selectPosition(itemView, context, current)
                 }
 
-                else if(current.selectorType == "SELECT_PLAYER" && current.itemsSelected[0] == "") {
+                else if(current.selectorType == "SELECT_PLAYER" && current.itemsSelected[0].get(0) == "") {
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_one)
                     val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_two)
                     val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_three)
@@ -94,7 +98,17 @@ class SelectorsAdapter(
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?,
                                             position: Int, id: Long) {
 
-                    current.itemsSelected[idx] = parent?.getItemAtPosition(position).toString()
+                    if(current.itemsSelected[idx].size < current.isMultiSelect[idx]) {
+                        val item = parent?.getItemAtPosition(position).toString()
+
+                        if(current.itemsSelected[idx].contains(item)){
+                            current.itemsSelected[idx].remove(item)
+                        }
+
+                        else {
+                            current.itemsSelected[idx].add(item)
+                        }
+                    }
 
                 }
 

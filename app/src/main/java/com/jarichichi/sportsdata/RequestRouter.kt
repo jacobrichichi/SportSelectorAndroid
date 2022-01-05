@@ -3,9 +3,13 @@ package com.jarichichi.sportsdata
 import android.R
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.view.menu.MenuView
 import androidx.core.content.ContextCompat.startActivity
 import com.android.volley.Request
@@ -29,21 +33,33 @@ class RequestRouter {
                 Response.Listener{ response ->
                     if(!response.getBoolean("error")){
                         val resArray = response.getJSONArray("data")
-                        val typ = current.selectorType
-                        val itemsSelected = current.itemsSelected
-
                         for(i in 0 until resArray.length()) {
                             teams.add(resArray.getJSONObject(i).get("TeamName").toString())
                         }
 
-                        val aAdapter = ArrayAdapter(
+                        val aAdapter = object : ArrayAdapter<String>(
                             context,
                             R.layout.simple_spinner_item,
                             teams
-                        ).also { adapter ->
+                        ){
+                            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) : View {
+                                var view = super.getView(position, convertView, parent) as TextView
+                                if(current.itemsSelected[0].contains(view.text)){
+                                    view.setTextColor(Color.BLUE)
+                                }
+                                else{
+                                    view.setTextColor(Color.BLACK)
+                                }
+
+                                return view
+                            }
+                        }.also { adapter ->
+                            adapter
                             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                             team_drop.adapter = adapter
                         }
+
+
 
 
                     }
@@ -77,14 +93,21 @@ class RequestRouter {
                         selectorsMap.put("selectorType" + i.toString(), selector.selectorType)
 
                         var j = 0
-                        for(item in selector.itemsSelected){
+                        for(itemList in selector.itemsSelected){
+                            //NEED TO PROPERLY IMPLEMENT WAY TO PASS LIST OF ITEMS SELECTED TO BACKEND
+                            var k = 0
+                            for(item in itemList){
+                                selectorsMap.put("itemsSelected" + i.toString() + j.toString() + k.toString(), item)
+                                k +=1
+                            }
 
-                            selectorsMap.put("itemsSelected" + i.toString() + j.toString(), item)
+                            selectorsMap.put("numItems" + i.toString() + j.toString(), k.toString())
+
                             j+=1
                         }
 
                         //Number of items corresponding to the ith selector
-                        selectorsMap.put("numItems" + i.toString(), j.toString())
+                        selectorsMap.put("numItemLists" + i.toString(), j.toString())
 
                         i += 1
 

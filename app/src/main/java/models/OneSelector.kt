@@ -1,5 +1,6 @@
 package models
 
 class OneSelector (selectorType: String = "",
-                   itemsSelected: Array<String> = arrayOf(""))
-                : Selector(selectorType, itemsSelected)
+                   itemsSelected: Array<MutableList<String>> = arrayOf(mutableListOf("")),
+                    isMultiSelect: Array<Int>)
+                : Selector(selectorType, itemsSelected, isMultiSelect)

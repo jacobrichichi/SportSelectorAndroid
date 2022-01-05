@@ -11,15 +11,15 @@ class SelectorList {
     }
 
 
-    fun addNewSelector(adapter_type: String, num_spinners: Int){
+    fun addNewSelector(adapter_type: String, isMultiSelect: Array<Int>, num_spinners: Int){
         if(num_spinners == 1) {
-            selectors.add(OneSelector(adapter_type))
+            selectors.add(OneSelector(adapter_type, isMultiSelect=isMultiSelect))
         }
         else if(num_spinners == 2) {
-            selectors.add(TwoSelector(adapter_type))
+            selectors.add(TwoSelector(adapter_type, isMultiSelect=isMultiSelect))
         }
         else{
-            selectors.add(ThreeSelector(adapter_type))
+            selectors.add(ThreeSelector(adapter_type, isMultiSelect=isMultiSelect))
         }
     }
 

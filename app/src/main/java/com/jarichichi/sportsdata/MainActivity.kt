@@ -67,19 +67,20 @@ class MainActivity : AppCompatActivity() {
             typeBuilder.setPositiveButton("OK"){
                 dialog, which ->
                     if(type_spinner.getSelectedItem() == "Teams"){
-                        selectorList.addNewSelector("SELECT_TEAM", 1)
+
+                        selectorList.addNewSelector("SELECT_TEAM", arrayOf(6),1)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
 
                     }
 
                     else if (type_spinner.getSelectedItem() == "Players"){
-                        selectorList.addNewSelector("SELECT_PLAYER", 3)
+                        selectorList.addNewSelector("SELECT_PLAYER", arrayOf(4, 3, 20), 3)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }
                     else if (type_spinner.getSelectedItem() == "Positions"){
-                        selectorList.addNewSelector("SELECT_POSITION", 2)
+                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(6, 4),  2)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }
