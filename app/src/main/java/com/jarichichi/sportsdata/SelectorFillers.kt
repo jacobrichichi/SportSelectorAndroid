@@ -47,11 +47,38 @@ class SelectorFillers {
         }
 
         fun selectPlayer(itemView: View, context: Context, current : Selector){
+            val first_text : TextView = itemView.findViewById<TextView>(R.id.sel_text_three_one) as TextView
+            val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_one)
+            val second_text : TextView = itemView.findViewById<TextView>(R.id.sel_text_three_two) as TextView
+            val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_two)
+            val third_text : TextView = itemView.findViewById<TextView>(R.id.sel_text_three_three) as TextView
+            val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_three)
+            val fourth_text : TextView = itemView.findViewById<TextView>(R.id.sel_text_three_four) as TextView
+
+            first_text.text = "From the "
+            second_text.text = " playing "
+            third_text.text = ", I'd like to know how the player(s) "
+            fourth_text.text = " performed"
+
+            RequestRouter.getAllTeams(context, team_drop, current)
+            val positions = arrayOf("QB", "WR","RB", "TE")
+            val aAdapter = ArrayAdapter(
+                context,
+                android.R.layout.simple_spinner_item,
+                positions
+            ).also { adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                position_drop.adapter = adapter
+            }
 
         }
 
         fun createCustomQuery(context: Context, selectors: List<Selector>)  {
             RequestRouter.sendCustomQuery(context, selectors)
+        }
+
+        fun fillSelectPlayer(context: Context, player_drop: Spinner, current: Selector){
+            RequestRouter.getPlayers(context, player_drop, current)
         }
 
     }

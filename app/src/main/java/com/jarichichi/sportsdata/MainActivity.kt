@@ -75,12 +75,12 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     else if (type_spinner.getSelectedItem() == "Players"){
-                        selectorList.addNewSelector("SELECT_PLAYER", arrayOf(4, 3, 20), 3)
+                        selectorList.addNewSelector("SELECT_PLAYER", arrayOf(1, 1, 20), 3)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }
                     else if (type_spinner.getSelectedItem() == "Positions"){
-                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(1, 4),  2)
+                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(2, 4),  2)
                         selectorsAdapter.numSelectors += 1
                         selectorsAdapter.notifyDataSetChanged()
                     }

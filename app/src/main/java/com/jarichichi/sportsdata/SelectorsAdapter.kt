@@ -80,8 +80,8 @@ class SelectorsAdapter(
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_one)
                     val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_two)
                     val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_three)
-                    team_drop.onItemSelectedListener = setItemSelected(current, 0)
-                    position_drop.onItemSelectedListener = setItemSelected(current, 1)
+                    team_drop.onItemSelectedListener = setItemSelected(current, 0, player_drop)
+                    position_drop.onItemSelectedListener = setItemSelected(current, 1, player_drop)
                     player_drop.onItemSelectedListener = setItemSelected(current, 2)
 
                     SelectorFillers.selectPlayer(itemView, context, current)
@@ -89,7 +89,7 @@ class SelectorsAdapter(
             }
         }
 
-        fun setItemSelected(current : Selector, idx: Int) : AdapterView.OnItemSelectedListener {
+        fun setItemSelected(current : Selector, idx: Int, emptyDrop: Spinner? = null) : AdapterView.OnItemSelectedListener {
             return object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -98,17 +98,29 @@ class SelectorsAdapter(
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?,
                                             position: Int, id: Long) {
 
-                    if(current.itemsSelected[idx].size < current.isMultiSelect[idx]) {
-                        val item = parent?.getItemAtPosition(position).toString()
+                    val item = parent?.getItemAtPosition(position).toString()
+                    if(current.isMultiSelect[idx] == 1){
+                        current.itemsSelected[idx].set(0, item)
 
-                        if(current.itemsSelected[idx].contains(item)){
-                            current.itemsSelected[idx].remove(item)
-                        }
-
-                        else {
-                            current.itemsSelected[idx].add(item)
+                        if (current.selectorType == "SELECT_PLAYER"
+                            && (current.itemsSelected[0][0] != "" && current.itemsSelected[1][0] != "")
+                            && (emptyDrop != null)
+                        ) {
+                            SelectorFillers.fillSelectPlayer(context, emptyDrop, current)
                         }
                     }
+
+                    else {
+                        if (current.itemsSelected[idx].contains(item)) {
+                            current.itemsSelected[idx].remove(item)
+                        }
+                        else if (current.itemsSelected[idx].size < current.isMultiSelect[idx]) {
+
+                            current.itemsSelected[idx].add(item)
+
+                        }
+                    }
+
 
                 }
 

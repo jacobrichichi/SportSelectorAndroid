@@ -28,11 +28,12 @@ class StatisticsActivity : AppCompatActivity() {
         val data = JSONObject(response).getJSONObject("data")
 
         val type = data.getString("type")
-        val teamTuples : JSONArray = data.getJSONArray("teamTuples")
+
         val playerPassingTuples : JSONArray = data.getJSONArray("playerPassingTuples")
         val playerRushReceiveTuples : JSONArray = data.getJSONArray("playerRushReceiveTuples")
 
         if(type == "Team") {
+            val teamTuples : JSONArray = data.getJSONArray("teamTuples")
             renderTeam(teamTuples)
         }
 

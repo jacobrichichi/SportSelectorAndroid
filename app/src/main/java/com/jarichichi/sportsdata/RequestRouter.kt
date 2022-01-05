@@ -54,13 +54,9 @@ class RequestRouter {
                                 return view
                             }
                         }.also { adapter ->
-                            adapter
                             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                             team_drop.adapter = adapter
                         }
-
-
-
 
                     }
                 },
@@ -68,6 +64,54 @@ class RequestRouter {
                     Log.d("Router error", error.toString())
                 }
             )
+
+            RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
+        }
+
+        fun getPlayers(context: Context, player_drop: Spinner, current: Selector){
+            val getRequest = object : StringRequest(Request.Method.POST, Constants.URL_GETCERTAINPLAYERS,
+                Response.Listener{ response ->
+                    var names = mutableListOf<String>()
+                    val data = JSONObject(response).getJSONArray("data")
+                    Log.d("BS", "BS")
+
+                    for(i in 0 until data.length()) {
+                        names.add(data.getJSONObject(i).get("Name").toString())
+                    }
+
+                    val aAdapter = object : ArrayAdapter<String>(
+                        context,
+                        R.layout.simple_spinner_item,
+                        names
+                    )
+                    {
+                        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) : View {
+                            var view = super.getView(position, convertView, parent) as TextView
+                            if(current.itemsSelected[2].contains(view.text)){
+                                view.setTextColor(Color.BLUE)
+                            }
+                            else{
+                                view.setTextColor(Color.BLACK)
+                            }
+
+                            return view
+                        }
+                    }.also { adapter ->
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        player_drop.adapter = adapter
+                    }
+
+                    },
+                Response.ErrorListener{ error-> Log.d("fail", error.toString())}
+            ) {
+                override fun getParams(): Map<String, String>{
+
+                    var params = HashMap<String, String>()
+                    params.put("Team", current.itemsSelected[0][0])
+                    params.put("Position", current.itemsSelected[1][0])
+                    return params
+                }
+            }
 
             RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
         }
@@ -120,7 +164,10 @@ class RequestRouter {
             RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
         }
 
+
     }
+
+
 
 
 }
