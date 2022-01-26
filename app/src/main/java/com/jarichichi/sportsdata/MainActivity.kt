@@ -42,23 +42,30 @@ class MainActivity : AppCompatActivity() {
         selectorsView.layoutManager = GridLayoutManager(this, 1)
 
         addButton.setOnClickListener {
-            var types : List<String> = listOf("SELECT_TEAM", "SELECT_PLAYER", "SELECT_POSITION")
-
-            /*if(cards.size == 1) {
-                types.add("TEAM_SELECTION")
-                types.add("PLAYER_SELECTION")
-            }*/
 
             val typeBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
             val modalView = LayoutInflater.from(this).inflate(R.layout.selector_type_modal, null)
-            typeBuilder.setTitle("Select your Selector")
+
 
             var type_spinner : Spinner = modalView.findViewById(R.id.choose_type_spinner)
+            var options : Array<String>
+            if(selectorsAdapter.getItemCount() == 0){
+                typeBuilder.setTitle("From where would you like stats retrieved?")
+                options = arrayOf("Teams", "Players", "Positions")
+            }
 
-            ArrayAdapter.createFromResource(
+            else{
+                typeBuilder.setTitle("And what conditions would you like?")
+                options = arrayOf("When Against Team", "When Against Player", "Temperature",
+                    "Winning Streak", "Losing Streak", "Certain Level of Defense", "This Teammate Is Playing",
+                    "This Teammate Isn't Playing")
+            }
+
+
+            ArrayAdapter(
                 this,
-                R.array.typeList,
-                android.R.layout.simple_spinner_item
+                android.R.layout.simple_spinner_item,
+                options
             ).also {adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 type_spinner.adapter = adapter
@@ -66,24 +73,24 @@ class MainActivity : AppCompatActivity() {
 
             typeBuilder.setPositiveButton("OK"){
                 dialog, which ->
-                    if(type_spinner.getSelectedItem() == "Teams"){
 
-                        selectorList.addNewSelector("SELECT_TEAM", arrayOf(6),1)
-                        selectorsAdapter.numSelectors += 1
-                        selectorsAdapter.notifyDataSetChanged()
-
+                    when(type_spinner.getSelectedItem()){
+                        "Teams" -> selectorList.addNewSelector("SELECT_TEAM", arrayOf(6),1)
+                        "Players" -> selectorList.addNewSelector("SELECT_PLAYER", arrayOf(1, 1, 20), 3)
+                        "Positions" -> selectorList.addNewSelector("SELECT_POSITION",arrayOf(2, 4),  2)
+                        "When Against Team" -> selectorList.addNewSelector("AGAINST_TEAM", arrayOf(6),  1)
+                        "Temperature" -> selectorList.addNewSelector("TEMPERATURE", arrayOf(2),  2)
+                        "Winning Streak" -> selectorList.addNewSelector("WINNING_STREAK", arrayOf(1), 1)
+                        "Losing Streak" -> selectorList.addNewSelector("LOSING_STREAK", arrayOf(1),  1)
+                        "Certain Level of Defense" -> selectorList.addNewSelector("DEFENSIVE_RATING", arrayOf(1),  1)
+                        "When Player Is Playing" -> selectorList.addNewSelector("PLAYER_PLAYING", arrayOf(3),  3)
+                        "Player Is Not Playing" -> selectorList.addNewSelector("PLAYER_ABSENT", arrayOf(3),  3)
                     }
 
-                    else if (type_spinner.getSelectedItem() == "Players"){
-                        selectorList.addNewSelector("SELECT_PLAYER", arrayOf(1, 1, 20), 3)
-                        selectorsAdapter.numSelectors += 1
-                        selectorsAdapter.notifyDataSetChanged()
-                    }
-                    else if (type_spinner.getSelectedItem() == "Positions"){
-                        selectorList.addNewSelector("SELECT_POSITION",arrayOf(2, 4),  2)
-                        selectorsAdapter.numSelectors += 1
-                        selectorsAdapter.notifyDataSetChanged()
-                    }
+                    selectorsAdapter.numSelectors += 1
+                    selectorsAdapter.notifyDataSetChanged()
+
+
             }
 
             typeBuilder.setView(modalView)

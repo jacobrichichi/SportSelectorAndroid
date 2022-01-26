@@ -73,6 +73,16 @@ class SelectorFillers {
 
         }
 
+        fun fillWhenAgainstTeam(itemView: View, context: Context, current : Selector){
+            val first_text : TextView = itemView.findViewById<TextView>(R.id.sel_text_one_one) as TextView
+            val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
+
+            first_text.text = "When playing against the "
+
+            RequestRouter.getAllTeams(context, team_drop, current)
+
+        }
+
         fun createCustomQuery(context: Context, selectors: List<Selector>)  {
             RequestRouter.sendCustomQuery(context, selectors)
         }

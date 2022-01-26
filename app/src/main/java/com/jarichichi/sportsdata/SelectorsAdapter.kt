@@ -86,6 +86,13 @@ class SelectorsAdapter(
 
                     SelectorFillers.selectPlayer(itemView, context, current)
                 }
+
+                else if(current.selectorType == "WHEN_AGAINST_TEAM"){
+                    val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
+                    team_drop.onItemSelectedListener = setItemSelected(current, 0)
+
+                    SelectorFillers.fillWhenAgainstTeam(itemView, context, current)
+                }
             }
         }
 

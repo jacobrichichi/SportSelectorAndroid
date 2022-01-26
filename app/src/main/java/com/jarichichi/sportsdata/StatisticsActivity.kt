@@ -1,16 +1,14 @@
 package com.jarichichi.sportsdata
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
+import androidx.annotation.RequiresApi
 import com.jarichichi.sportsdata.Constants.Companion.SELECTORS_KEY
 import org.json.JSONArray
 import org.json.JSONObject
@@ -18,6 +16,7 @@ import org.json.JSONObject
 class StatisticsActivity : AppCompatActivity() {
 
     private lateinit var statsLayout: LinearLayout
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
@@ -32,33 +31,68 @@ class StatisticsActivity : AppCompatActivity() {
         val playerPassingTuples : JSONArray = data.getJSONArray("playerPassingTuples")
         val playerRushReceiveTuples : JSONArray = data.getJSONArray("playerRushReceiveTuples")
 
+
+        renderPassing(playerPassingTuples)
+        renderRushReceive(playerRushReceiveTuples)
+
         if(type == "Team") {
             val teamTuples : JSONArray = data.getJSONArray("teamTuples")
             renderTeam(teamTuples)
         }
 
-        renderPassing(playerPassingTuples)
-        renderRushReceive(playerRushReceiveTuples)
-
 
         Log.d("hu", "hi")
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun renderTeam(tuples : JSONArray){
+        val attrs = listOf("Week", "DayOfWeek", "Date", "OwnTeamName", "OwnFirstQuarter","OwnSecondQuarter","OwnThirdQuarter",
+            "OwnFourthQuarter","OwnOTTotal", "OwnTotalScore", "OwnFirstDowns", "OwnPenalties",
+            "OwnPenaltyYards", "OwnThirdDownConversions", "OwnThirdDownAttempts", "OwnFourthDownConversions",
+            "OwnFourthDownAttempts", "OwnToP",
+            "OppTeamName", "OppFirstQuarter","OppSecondQuarter","OppThirdQuarter",
+            "OppFourthQuarter","OppOTTotal", "OppTotalScore", "OppFirstDowns", "OppPenalties",
+            "OppPenaltyYards", "OppThirdDownConversions", "OppThirdDownAttempts", "OppFourthDownConversions",
+            "OppFourthDownAttempts", "OppToP")
 
         var parsedTuples = mutableListOf<Map<String,String>>()
         var i = 0
         while (i < tuples.length()) {
             val tuple : JSONObject = tuples.get(i) as JSONObject
             val parsedTuple : Map<String, String> = mapOf(
-                "TeamName" to tuple.getString("TeamName"),
-                "Points" to tuple.getInt("Points").toString(),
-                "Yards" to tuple.getInt("Yards").toString(),
-                "TOs" to tuple.getInt("TOs").toString(),
-                "PassYards" to tuple.getInt("PassYards").toString(),
-                "PassTDs" to tuple.getInt("PassTDs").toString(),
-                "RushYards" to tuple.getInt("RushYards").toString(),
-                "RushTDs" to tuple.getInt("RushTDs").toString()
+                "Week" to tuple.getInt("Week").toString(),
+                "DayOfWeek" to tuple.getString("DayOfWeek"),
+                "Date" to tuple.getString("Date"),
+                "OwnTeamName" to tuple.getString("OwnTeamName"),
+                "OwnFirstQuarter" to tuple.getInt("OwnFirstQuarter").toString(),
+                "OwnSecondQuarter" to tuple.getInt("OwnSecondQuarter").toString(),
+                "OwnThirdQuarter" to tuple.getInt("OwnThirdQuarter").toString(),
+                "OwnFourthQuarter" to tuple.getInt("OwnFourthQuarter").toString(),
+                "OwnOTTotal" to tuple.getInt("OwnOTTotal").toString(),
+                "OwnTotalScore" to tuple.getInt("OwnTotalScore").toString(),
+                "OwnFirstDowns" to tuple.getInt("OwnFirstDowns").toString(),
+                "OwnPenalties" to tuple.getInt("OwnPenalties").toString(),
+                "OwnPenaltyYards" to tuple.getInt("OwnFirstQuarter").toString(),
+                "OwnThirdDownConversions" to tuple.getInt("OwnThirdQuarter").toString(),
+                "OwnThirdDownAttempts" to tuple.getInt("OwnSecondQuarter").toString(),
+                "OwnFourthDownConversions" to tuple.getInt("OwnFourthQuarter").toString(),
+                "OwnFourthDownAttempts" to tuple.getInt("OwnOTTotal").toString(),
+                "OwnToP" to tuple.getInt("OwnToP").toString(),
+                "OppTeamName" to tuple.getString("OppTeamName"),
+                "OppFirstQuarter" to tuple.getInt("OppFirstQuarter").toString(),
+                "OppSecondQuarter" to tuple.getInt("OppSecondQuarter").toString(),
+                "OppThirdQuarter" to tuple.getInt("OppThirdQuarter").toString(),
+                "OppFourthQuarter" to tuple.getInt("OppFourthQuarter").toString(),
+                "OppOTTotal" to tuple.getInt("OppOTTotal").toString(),
+                "OppTotalScore" to tuple.getInt("OppTotalScore").toString(),
+                "OppFirstDowns" to tuple.getInt("OppFirstDowns").toString(),
+                "OppPenalties" to tuple.getInt("OppPenalties").toString(),
+                "OppPenaltyYards" to tuple.getInt("OppFirstQuarter").toString(),
+                "OppThirdDownConversions" to tuple.getInt("OppThirdQuarter").toString(),
+                "OppThirdDownAttempts" to tuple.getInt("OppSecondQuarter").toString(),
+                "OppFourthDownConversions" to tuple.getInt("OppFourthQuarter").toString(),
+                "OppFourthDownAttempts" to tuple.getInt("OppOTTotal").toString(),
+                "OppToP" to tuple.getInt("OppToP").toString(),
             )
 
             parsedTuples.add(parsedTuple)
@@ -66,13 +100,24 @@ class StatisticsActivity : AppCompatActivity() {
             i++
         }
 
+        var tableTitle: TextView = TextView(this)
+        tableTitle.text = "Team Aggregate Info"
+        tableTitle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        tableTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Medium)
+
+        statsLayout.addView(tableTitle)
+
         var teamTable: TableLayout = TableLayout(this)
         var teamScrollView : HorizontalScrollView = HorizontalScrollView(this)
         var scrollLinear : LinearLayout = LinearLayout(this)
 
 
         scrollLinear.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        teamScrollView.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        var scrollViewParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        scrollViewParams.setMargins(20,20,20,20)
+        teamScrollView.layoutParams = scrollViewParams
+
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
         teamTable.setBackgroundColor(Color.BLACK)
@@ -87,61 +132,49 @@ class StatisticsActivity : AppCompatActivity() {
         rowLayoutParams.setMargins(1, 1, 1, 0)
         row.layoutParams = rowLayoutParams
 
-        row.addView(createCell("TeamName"))
-        row.addView(createCell("Points"))
-        row.addView(createCell("Yards"))
-        row.addView(createCell("TOs"))
-        row.addView(createCell("PassYards"))
-        row.addView(createCell("PassTDs"))
-        row.addView(createCell("RushYards"))
-        row.addView(createCell("RushTDs"))
+        for(attr in attrs){
+            row.addView(createCell(attr))
+        }
 
         teamTable.addView(row)
 
         for(tuple in parsedTuples){
             row = TableRow(this)
 
-            row.addView(createCell(tuple["TeamName"] as String))
-            row.addView(createCell(tuple["Points"] as String))
-            row.addView(createCell(tuple["Yards"] as String))
-            row.addView(createCell(tuple["TOs"] as String))
-            row.addView(createCell(tuple["PassYards"] as String))
-            row.addView(createCell(tuple["PassTDs"] as String))
-            row.addView(createCell(tuple["RushYards"] as String))
-            row.addView(createCell(tuple["RushTDs"] as String))
+            for(attr in attrs){
+                row.addView(createCell(tuple[attr] as String))
+            }
 
             teamTable.addView(row)
             row.setBackgroundColor(Color.BLACK)
-            //rowLayoutParams.setMargins(10,10, 10, 10)
 
 
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun renderPassing(tuples: JSONArray){
+        val attrs = listOf( "Week", "TeamName", "Name", "OpposingTeamName", "Completions", "Attempts", "Yards", "TouchDowns", "Interceptions",
+            "Sacks", "SackYards", "PassLong", "PasserRating")
+
         var parsedTuples = mutableListOf<Map<String,String>>()
         var i = 0
         while (i < tuples.length()) {
             val tuple : JSONObject = tuples.get(i) as JSONObject
             val parsedTuple : Map<String, String> = mapOf(
-                "Year" to tuple.getInt("Year").toString(),
-                "Team" to tuple.getString("Team"),
+                "Week" to tuple.getInt("Week").toString(),
+                "TeamName" to tuple.getString("TeamName"),
                 "Name" to tuple.getString("Name"),
-                "Age" to tuple.getInt("Age").toString(),
-                "Position" to tuple.getString("Position"),
-                "Games" to tuple.getInt("Games").toString(),
-                "GamesStarted" to tuple.getInt("GamesStarted").toString(),
-                "QBRecord" to tuple.getString("QBRecord"),
+                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
                 "Completions" to tuple.getInt("Completions").toString(),
-                "PassAttempts" to tuple.getInt("PassAttempts").toString(),
-                "PassingYards" to tuple.getInt("PassingYards").toString(),
-                "PassingTDs" to tuple.getInt("PassingTDs").toString(),
-                "PassingInterceptions" to tuple.getInt("PassingInterceptions").toString(),
-                "LongestPass" to tuple.getInt("LongestPass").toString(),
-                "PasserRating" to tuple.getDouble("PasserRating").toString(),
-                "QBR" to tuple.getDouble("QBR").toString(),
-                "Comebacks" to tuple.getInt("Comebacks").toString(),
-                "GWD" to tuple.getInt("GWD").toString()
+                "Attempts" to tuple.getInt("Attempts").toString(),
+                "Yards" to tuple.getInt("Yards").toString(),
+                "TouchDowns" to tuple.getInt("TouchDowns").toString(),
+                "Interceptions" to tuple.getInt("Interceptions").toString(),
+                "Sacks" to tuple.getInt("Sacks").toString(),
+                "SackYards" to tuple.getInt("SackYards").toString(),
+                "PassLong" to tuple.getInt("PassLong").toString(),
+                "PasserRating" to tuple.getDouble("PasserRating").toString()
             )
 
             parsedTuples.add(parsedTuple)
@@ -149,13 +182,24 @@ class StatisticsActivity : AppCompatActivity() {
             i++
         }
 
+        var tableTitle: TextView = TextView(this)
+        tableTitle.text = "Player Passing Info"
+        tableTitle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        tableTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Medium)
+
+        statsLayout.addView(tableTitle)
+
         var teamTable: TableLayout = TableLayout(this)
         var teamScrollView : HorizontalScrollView = HorizontalScrollView(this)
         var scrollLinear : LinearLayout = LinearLayout(this)
 
 
         scrollLinear.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        teamScrollView.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        var scrollViewParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        scrollViewParams.setMargins(20,20,20,20)
+        teamScrollView.layoutParams = scrollViewParams
+
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
         teamTable.setBackgroundColor(Color.BLACK)
@@ -170,48 +214,18 @@ class StatisticsActivity : AppCompatActivity() {
         rowLayoutParams.setMargins(1, 1, 1, 0)
         row.layoutParams = rowLayoutParams
 
-        row.addView(createCell("Year"))
-        row.addView(createCell("Team"))
-        row.addView(createCell("Name"))
-        row.addView(createCell("Age"))
-        row.addView(createCell("Position"))
-        row.addView(createCell("Games"))
-        row.addView(createCell("GamesStarted"))
-        row.addView(createCell("QBRecord"))
-        row.addView(createCell("Completions"))
-        row.addView(createCell("PassAttempts"))
-        row.addView(createCell("PassingYards"))
-        row.addView(createCell("PassingTDs"))
-        row.addView(createCell("PassingInterceptions"))
-        row.addView(createCell("LongestPass"))
-        row.addView(createCell("PasserRating"))
-        row.addView(createCell("QBR"))
-        row.addView(createCell("Comebacks"))
-        row.addView(createCell("GWD"))
+        for(attr in attrs){
+            row.addView(createCell(attr))
+        }
 
         teamTable.addView(row)
 
         for(tuple in parsedTuples) {
             row = TableRow(this)
 
-            row.addView(createCell(tuple["Year"] as String))
-            row.addView(createCell(tuple["Team"] as String))
-            row.addView(createCell(tuple["Name"] as String))
-            row.addView(createCell(tuple["Age"] as String))
-            row.addView(createCell(tuple["Position"] as String))
-            row.addView(createCell(tuple["Games"] as String))
-            row.addView(createCell(tuple["GamesStarted"] as String))
-            row.addView(createCell(tuple["QBRecord"] as String))
-            row.addView(createCell(tuple["Completions"] as String))
-            row.addView(createCell(tuple["PassAttempts"] as String))
-            row.addView(createCell(tuple["PassingYards"] as String))
-            row.addView(createCell(tuple["PassingTDs"] as String))
-            row.addView(createCell(tuple["PassingInterceptions"] as String))
-            row.addView(createCell(tuple["LongestPass"] as String))
-            row.addView(createCell(tuple["PasserRating"] as String))
-            row.addView(createCell(tuple["QBR"] as String))
-            row.addView(createCell(tuple["Comebacks"] as String))
-            row.addView(createCell(tuple["GWD"] as String))
+            for(attr in attrs){
+                row.addView(createCell(tuple[attr] as String))
+            }
 
             teamTable.addView(row)
             row.setBackgroundColor(Color.BLACK)
@@ -219,29 +233,30 @@ class StatisticsActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun renderRushReceive(tuples: JSONArray){
+        val attrs = listOf( "Week", "TeamName", "Name", "OpposingTeamName", "RushAttempts", "RushYards", "RushTouchDowns", "RushLong",
+            "Targets", "Receptions", "ReceivingYards", "ReceivingTouchDowns", "Fumbles", "FumblesLost")
+
         var parsedTuples = mutableListOf<Map<String,String>>()
         var i = 0
         while (i < tuples.length()) {
             val tuple : JSONObject = tuples.get(i) as JSONObject
             val parsedTuple : Map<String, String> = mapOf(
-                "Year" to tuple.getInt("Year").toString(),
-                "Team" to tuple.getString("Team"),
+                "Week" to tuple.getInt("Week").toString(),
+                "TeamName" to tuple.getString("TeamName"),
                 "Name" to tuple.getString("Name"),
-                "Age" to tuple.getInt("Age").toString(),
-                "Position" to tuple.getString("Position"),
-                "Games" to tuple.getInt("Games").toString(),
-                "GamesStarted" to tuple.getInt("GamesStarted").toString(),
+                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
                 "RushAttempts" to tuple.getInt("RushAttempts").toString(),
                 "RushYards" to tuple.getInt("RushYards").toString(),
-                "RushTDs" to tuple.getInt("RushTDs").toString(),
+                "RushTouchDowns" to tuple.getInt("RushTouchDowns").toString(),
                 "RushLong" to tuple.getInt("RushLong").toString(),
                 "Targets" to tuple.getInt("Targets").toString(),
                 "Receptions" to tuple.getInt("Receptions").toString(),
                 "ReceivingYards" to tuple.getInt("ReceivingYards").toString(),
-                "ReceivingTDs" to tuple.getInt("ReceivingTDs").toString(),
-                "ReceivingLong" to tuple.getInt("ReceivingLong").toString(),
-                "Fumbles" to tuple.getInt("Fumbles").toString()
+                "ReceivingTouchDowns" to tuple.getInt("ReceivingTouchDowns").toString(),
+                "Fumbles" to tuple.getInt("Fumbles").toString(),
+                "FumblesLost" to tuple.getInt("FumblesLost").toString(),
             )
 
             parsedTuples.add(parsedTuple)
@@ -249,13 +264,24 @@ class StatisticsActivity : AppCompatActivity() {
             i++
         }
 
+        var tableTitle: TextView = TextView(this)
+        tableTitle.text = "Player Passing Info"
+        tableTitle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        tableTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Medium)
+
+        statsLayout.addView(tableTitle)
+
         var teamTable: TableLayout = TableLayout(this)
         var teamScrollView : HorizontalScrollView = HorizontalScrollView(this)
         var scrollLinear : LinearLayout = LinearLayout(this)
 
 
         scrollLinear.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        teamScrollView.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        var scrollViewParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        scrollViewParams.setMargins(20,20,20,20)
+        teamScrollView.layoutParams = scrollViewParams
+
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
         teamTable.setBackgroundColor(Color.BLACK)
@@ -270,46 +296,18 @@ class StatisticsActivity : AppCompatActivity() {
         rowLayoutParams.setMargins(1, 1, 1, 0)
         row.layoutParams = rowLayoutParams
 
-        row.addView(createCell("Year"))
-        row.addView(createCell("Team"))
-        row.addView(createCell("Name"))
-        row.addView(createCell("Age"))
-        row.addView(createCell("Position"))
-        row.addView(createCell("Games"))
-        row.addView(createCell("GamesStarted"))
-        row.addView(createCell("RushAttempts"))
-        row.addView(createCell("RushYards"))
-        row.addView(createCell("RushTDs"))
-        row.addView(createCell("RushLong"))
-        row.addView(createCell("Targets"))
-        row.addView(createCell("Receptions"))
-        row.addView(createCell("ReceivingYards"))
-        row.addView(createCell("ReceivingTDs"))
-        row.addView(createCell("ReceivingLong"))
-        row.addView(createCell("Fumbles"))
+        for(attr in attrs){
+            row.addView(createCell(attr))
+        }
 
         teamTable.addView(row)
 
         for(tuple in parsedTuples) {
             row = TableRow(this)
 
-            row.addView(createCell(tuple["Year"] as String))
-            row.addView(createCell(tuple["Team"] as String))
-            row.addView(createCell(tuple["Name"] as String))
-            row.addView(createCell(tuple["Age"] as String))
-            row.addView(createCell(tuple["Position"] as String))
-            row.addView(createCell(tuple["Games"] as String))
-            row.addView(createCell(tuple["GamesStarted"] as String))
-            row.addView(createCell(tuple["RushAttempts"] as String))
-            row.addView(createCell(tuple["RushYards"] as String))
-            row.addView(createCell(tuple["RushTDs"] as String))
-            row.addView(createCell(tuple["RushLong"] as String))
-            row.addView(createCell(tuple["Targets"] as String))
-            row.addView(createCell(tuple["Receptions"] as String))
-            row.addView(createCell(tuple["ReceivingYards"] as String))
-            row.addView(createCell(tuple["ReceivingTDs"] as String))
-            row.addView(createCell(tuple["ReceivingLong"] as String))
-            row.addView(createCell(tuple["Fumbles"] as String))
+            for(attr in attrs) {
+                row.addView(createCell(tuple[attr] as String))
+            }
 
             teamTable.addView(row)
             row.setBackgroundColor(Color.BLACK)
@@ -321,6 +319,7 @@ class StatisticsActivity : AppCompatActivity() {
         val tv : TextView = TextView(this)
         tv.setText(text)
         tv.setBackgroundColor(Color.WHITE)
+        tv.setPadding(10,10,10,10)
         var tvLayoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT)
         tvLayoutParams.setMargins(0, 0, 2, 2)
         tv.layoutParams = tvLayoutParams
