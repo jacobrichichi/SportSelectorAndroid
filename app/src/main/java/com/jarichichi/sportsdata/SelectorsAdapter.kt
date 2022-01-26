@@ -34,7 +34,8 @@ class SelectorsAdapter(
         when (cards.get(cards.size-1).selectorType){
             "SELECT_TEAM" -> view = LayoutInflater.from(context).inflate(R.layout.one_selector, parent, false)
             "SELECT_PLAYER" -> view = LayoutInflater.from(context).inflate(R.layout.three_selector, parent, false)
-            else -> view = LayoutInflater.from(context).inflate(R.layout.two_selector, parent, false)
+            "SELECT_POSITION" -> view = LayoutInflater.from(context).inflate(R.layout.two_selector, parent, false)
+            else -> view = LayoutInflater.from(context).inflate(R.layout.one_selector, parent, false)
         }
 
 
@@ -60,14 +61,19 @@ class SelectorsAdapter(
 
                 val current : Selector = cards.get(position)
 
+                if(current.selectorType == "SELECT_TEAM"
+                    && current.itemsSelected[0].get(0) == ""
+                    && current.itemsSelected[0].size < 2) {
 
-                if(current.selectorType == "SELECT_TEAM" && current.itemsSelected[0].get(0) == "") {
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
                     team_drop.onItemSelectedListener = setItemSelected(current, 0)
                     SelectorFillers.selectTeam(itemView, context, current)
                 }
 
-                else if(current.selectorType == "SELECT_POSITION" && current.itemsSelected[0].get(0) == "") {
+                else if(current.selectorType == "SELECT_POSITION"
+                    && current.itemsSelected[0].get(0) == ""
+                    && current.itemsSelected[0].size < 2) {
+
                     val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_one)
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_two)
                     position_drop.onItemSelectedListener = setItemSelected(current, 0)
@@ -76,7 +82,10 @@ class SelectorsAdapter(
                     SelectorFillers.selectPosition(itemView, context, current)
                 }
 
-                else if(current.selectorType == "SELECT_PLAYER" && current.itemsSelected[0].get(0) == "") {
+                else if(current.selectorType == "SELECT_PLAYER"
+                    && current.itemsSelected[0].get(0) == ""
+                    && current.itemsSelected[0].size < 2) {
+
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_one)
                     val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_two)
                     val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_three_three)
@@ -87,7 +96,7 @@ class SelectorsAdapter(
                     SelectorFillers.selectPlayer(itemView, context, current)
                 }
 
-                else if(current.selectorType == "WHEN_AGAINST_TEAM"){
+                else if(current.selectorType == "AGAINST_TEAM"){
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
                     team_drop.onItemSelectedListener = setItemSelected(current, 0)
 
