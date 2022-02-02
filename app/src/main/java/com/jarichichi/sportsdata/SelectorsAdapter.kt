@@ -35,7 +35,9 @@ class SelectorsAdapter(
             "SELECT_TEAM" -> view = LayoutInflater.from(context).inflate(R.layout.one_selector, parent, false)
             "SELECT_PLAYER" -> view = LayoutInflater.from(context).inflate(R.layout.three_selector, parent, false)
             "SELECT_POSITION" -> view = LayoutInflater.from(context).inflate(R.layout.two_selector, parent, false)
-            else -> view = LayoutInflater.from(context).inflate(R.layout.one_selector, parent, false)
+            "AGAINST_TEAM" -> view = LayoutInflater.from(context).inflate(R.layout.one_selector, parent, false)
+            "TEMPERATURE" -> view = LayoutInflater.from(context).inflate(R.layout.two_selector, parent, false)
+            else -> view = LayoutInflater.from(context).inflate(R.layout.two_selector, parent, false)  // PLAYER PLAYING
         }
 
 
@@ -60,6 +62,10 @@ class SelectorsAdapter(
             if(cards.size > 0){
 
                 val current : Selector = cards.get(position)
+
+                // Certain Selectors are dependent upon the changing of other selectors, requiring
+                // the view itself to be attached to each selector
+                current.itemView = itemView
 
                 if(current.selectorType == "SELECT_TEAM"
                     && current.itemsSelected[0].get(0) == ""
@@ -96,12 +102,32 @@ class SelectorsAdapter(
                     SelectorFillers.selectPlayer(itemView, context, current)
                 }
 
+                else if(current.selectorType == "PLAYER_PLAYING"){
+                    val position_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_one)
+                    val player_drop = itemView.findViewById<Spinner>(R.id.sel_drop_two_two)
+                    position_drop.onItemSelectedListener = setItemSelected(current, 0, player_drop)
+                    player_drop.onItemSelectedListener = setItemSelected(current, 1)
+
+                    SelectorFillers.fillWhenWithPlayerTeamsSelected(itemView, context, current)
+                }
+
                 else if(current.selectorType == "AGAINST_TEAM"){
                     val team_drop = itemView.findViewById<Spinner>(R.id.sel_drop_one_one)
                     team_drop.onItemSelectedListener = setItemSelected(current, 0)
 
                     SelectorFillers.fillWhenAgainstTeam(itemView, context, current)
                 }
+
+                else if(current.selectorType == "TEMPERATURE"){
+                    val above_below_drop =itemView.findViewById<Spinner>(R.id.sel_drop_two_one)
+                    val temps_drop =itemView.findViewById<Spinner>(R.id.sel_drop_two_two)
+
+                    above_below_drop.onItemSelectedListener = setItemSelected(current, 0)
+                    temps_drop.onItemSelectedListener = setItemSelected(current, 1)
+
+                    SelectorFillers.fillWhenTemperature(itemView, context, current)
+                }
+
             }
         }
 
@@ -115,25 +141,55 @@ class SelectorsAdapter(
                                             position: Int, id: Long) {
 
                     val item = parent?.getItemAtPosition(position).toString()
+
+                    // If only one item can be selected, select it
                     if(current.isMultiSelect[idx] == 1){
                         current.itemsSelected[idx].set(0, item)
 
-                        if (current.selectorType == "SELECT_PLAYER"
+                        if ((current.selectorType == "SELECT_PLAYER")
                             && (current.itemsSelected[0][0] != "" && current.itemsSelected[1][0] != "")
                             && (emptyDrop != null)
                         ) {
-                            SelectorFillers.fillSelectPlayer(context, emptyDrop, current)
+                            SelectorFillers.fillSelectPlayer(context, emptyDrop, current, current.itemsSelected[0][0])
+
+                            /*for(selector in cards){
+                                if(selector.selectorType == "PLAYER_PLAYING" && selector.itemsSelected[0][0] != ""){
+                                    SelectorFillers.fillSelectPlayer(context, emptyDrop, selector, current.itemsSelected[0][0])
+                                }
+                            }*/
                         }
                     }
 
+
+                    //Multi selection logic
                     else {
                         if (current.itemsSelected[idx].contains(item)) {
                             current.itemsSelected[idx].remove(item)
                         }
                         else if (current.itemsSelected[idx].size < current.isMultiSelect[idx]) {
-
                             current.itemsSelected[idx].add(item)
+                        }
 
+                        // THESE FUNCTION TO KEEP PLAYER DROP UPDATED FOR HOW TEAM PLAYS WITH OTHER
+                        // PLAYER PLAYING
+
+                        // KEEP UPDATED WHEN TEAM IS ADDED/ REMOVED
+                        if(current.selectorType == "SELECT_TEAM"){
+                            for(selector in cards){
+                                if(selector.selectorType == "PLAYER_PLAYING"){
+                                    SelectorFillers.fillMultipleTeams(context,
+                                        selector.itemView?.findViewById<Spinner>(R.id.sel_drop_two_two),
+                                        selector, cards.get(0).itemsSelected[0])
+                                }
+                            }
+                        }
+
+                        // KEEP UPDATED WHEN POSITION IS ADDED / REMOVED
+                        if(current.selectorType == "PLAYER_PLAYING" && idx == 0){
+                            // If a position was selected, the player drop selections need to be updated
+                            SelectorFillers.fillMultipleTeams(context,
+                                current.itemView?.findViewById<Spinner>(R.id.sel_drop_two_two),
+                                current, cards.get(0).itemsSelected[0])
                         }
                     }
 

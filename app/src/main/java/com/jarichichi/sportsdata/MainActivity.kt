@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
                 typeBuilder.setTitle("And what conditions would you like?")
                 options = arrayOf("When Against Team", "When Against Player", "Temperature",
                     "Winning Streak", "Losing Streak", "Certain Level of Defense", "This Teammate Is Playing",
-                    "This Teammate Isn't Playing")
+                    "This Teammate Is Not Playing")
             }
 
 
@@ -79,12 +79,12 @@ class MainActivity : AppCompatActivity() {
                         "Players" -> selectorList.addNewSelector("SELECT_PLAYER", arrayOf(1, 1, 20), 3)
                         "Positions" -> selectorList.addNewSelector("SELECT_POSITION",arrayOf(2, 4),  2)
                         "When Against Team" -> selectorList.addNewSelector("AGAINST_TEAM", arrayOf(6),  1)
-                        "Temperature" -> selectorList.addNewSelector("TEMPERATURE", arrayOf(2),  2)
+                        "Temperature" -> selectorList.addNewSelector("TEMPERATURE", arrayOf(1, 1),  2)
                         "Winning Streak" -> selectorList.addNewSelector("WINNING_STREAK", arrayOf(1), 1)
                         "Losing Streak" -> selectorList.addNewSelector("LOSING_STREAK", arrayOf(1),  1)
                         "Certain Level of Defense" -> selectorList.addNewSelector("DEFENSIVE_RATING", arrayOf(1),  1)
-                        "When Player Is Playing" -> selectorList.addNewSelector("PLAYER_PLAYING", arrayOf(3),  3)
-                        "Player Is Not Playing" -> selectorList.addNewSelector("PLAYER_ABSENT", arrayOf(3),  3)
+                        "This Teammate Is Playing" -> selectorList.addNewSelector("PLAYER_PLAYING", arrayOf(3, 3),  2)
+                        "This Teammate Is Not Playing" -> selectorList.addNewSelector("PLAYER_ABSENT", arrayOf(3),  3)
                     }
 
                     selectorsAdapter.numSelectors += 1

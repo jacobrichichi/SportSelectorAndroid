@@ -26,7 +26,6 @@ class RequestRouter {
     companion object{
         fun getAllTeams(context: Context, team_drop: Spinner, current : Selector){
             var teams : MutableList<String> = mutableListOf()
-            var curr : Selector = current
             Log.d("Router", "Router")
 
             val getRequest = JsonObjectRequest(Request.Method.GET, Constants.URL_GETALLTEAMS, null,
@@ -37,7 +36,7 @@ class RequestRouter {
                             teams.add(resArray.getJSONObject(i).get("TeamName").toString())
                         }
 
-                        val aAdapter = object : ArrayAdapter<String>(
+                        object : ArrayAdapter<String>(
                             context,
                             R.layout.simple_spinner_item,
                             teams
@@ -68,13 +67,70 @@ class RequestRouter {
             RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
         }
 
-        fun getPlayers(context: Context, player_drop: Spinner, current: Selector){
+        fun getPlayersMultipleTeams(context: Context, player_drop: Spinner?, current: Selector, teams: List<String>){
+            val getRequest = object : StringRequest(Request.Method.POST, Constants.URL_GETPLAYERSMULTIPLETEAMS,
+                Response.Listener{ response ->
+                    var names = mutableListOf<String>()
+                    val data = JSONObject(response).getJSONArray("data")
+                    for(i in 0 until data.length()) {
+                        names.add(data.getJSONObject(i).get("Name").toString())
+                    }
+
+                    val aAdapter = object : ArrayAdapter<String>(
+                        context,
+                        R.layout.simple_spinner_item,
+                        names
+                    )
+                    {
+                        override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) : View {
+                            var view = super.getView(position, convertView, parent) as TextView
+                            if(current.itemsSelected[1].contains(view.text)){
+                                view.setTextColor(Color.BLUE)
+                            }
+                            else{
+                                view.setTextColor(Color.BLACK)
+                            }
+                            return view
+                        }
+                    }.also { adapter ->
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                        player_drop?.adapter = adapter
+                    }
+
+                },
+                Response.ErrorListener{ error-> Log.d("fail", error.toString())}
+
+            ) {
+                override fun getParams(): Map<String, String>{
+
+                    var params = HashMap<String, String>()
+
+                    params.put("NumTeams", teams.size.toString())
+                    var i = 0
+                    for(team in teams){
+                        params.put("Team$i", team)
+                        i++
+                    }
+                    params.put("NumPositions", current.itemsSelected[0].size.toString())
+
+                    i = 0
+                    for(position in current.itemsSelected[0]){
+                        params.put("Position$i", position)
+                        i++
+                    }
+                    return params
+                }
+            }
+
+            RequestHandlerSingleton.getInstance(context).addToRequestQueue(getRequest)
+
+        }
+
+        fun getPlayers(context: Context, player_drop: Spinner, current: Selector, team: String){
             val getRequest = object : StringRequest(Request.Method.POST, Constants.URL_GETCERTAINPLAYERS,
                 Response.Listener{ response ->
                     var names = mutableListOf<String>()
                     val data = JSONObject(response).getJSONArray("data")
-                    Log.d("BS", "BS")
-
                     for(i in 0 until data.length()) {
                         names.add(data.getJSONObject(i).get("Name").toString())
                     }
@@ -130,10 +186,17 @@ class RequestRouter {
 
                     var selectorsMap = HashMap<String, String>()
                     var i = 0
+                    var selectorType: String = ""
 
                     selectorsMap.put("numSelectors", selectors.size.toString())
                     for(selector in selectors){
-                        selectorsMap.put("selectorType" + i.toString(), selector.selectorType)
+                        selectorType = selector.selectorType
+
+                        if(selectorType == "TEAM_WITH_PLAYER_PLAYING"){
+                            selectorType = "PLAYER_PLAYING"
+                        }
+
+                        selectorsMap.put("selectorType" + i.toString(), selectorType)
 
                         var j = 0
                         for(itemList in selector.itemsSelected){
