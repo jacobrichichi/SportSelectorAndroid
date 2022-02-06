@@ -33,40 +33,128 @@ class StatisticsActivity : AppCompatActivity() {
 
         val type = data.getString("type")
 
+        // Work around all Passing Tuples
         val playerPassingTuples : JSONArray = data.getJSONArray("playerPassingTuples")
+        var parsedPassingTuples : MutableList<Map<String, String>> = mutableListOf()
+        // Convert tuples to a workable format
+        parsePassingTuples(playerPassingTuples, parsedPassingTuples)
+        // {"Cardinals": [{"Name": "Kyler Murray", "Yards": ...}, {"Name" ...}], "Browns" :[{...}, {...}]}
+        var seperatedPassingTuples : MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
+        seperateTuplesByTeam(parsedPassingTuples, seperatedPassingTuples, "TeamName")
+
+        compilePassingByGame(parsedPassingTuples)
+
+        // Work around all rush/receive tuples
         val playerRushReceiveTuples : JSONArray = data.getJSONArray("playerRushReceiveTuples")
+        var parsedRushReceiveTuples: MutableList<Map<String, String>> = mutableListOf()
+        // Convert tuples to a workable format
+        parseRushReceiveTuples(playerRushReceiveTuples, parsedRushReceiveTuples)
+        var seperatedRushReceiveTuples : MutableMap<String, MutableList<Map<String, String>>> = mutableMapOf()
+        seperateTuplesByTeam(parsedRushReceiveTuples, seperatedRushReceiveTuples, "TeamName")
+
+        compileRushReceiveByGame(parsedRushReceiveTuples)
 
 
-        renderPassing(playerPassingTuples)
-        renderRushReceive(playerRushReceiveTuples)
-
-        if(type == "Team") {
+        // Work around team tuples if need be
+        var passingTeamList : MutableList<Map<String, String>>
+        var seperatedTeamTuples : MutableMap<String, MutableList<Map<String, String>>>
+        if(type == "Team"){
             val teamTuples : JSONArray = data.getJSONArray("teamTuples")
-            renderTeam(teamTuples)
+            var parsedTeamTuples : MutableList<Map<String, String>> = mutableListOf()
+            parseTeamTuples(teamTuples, parsedTeamTuples)
+            seperatedTeamTuples = mutableMapOf()
+            seperateTuplesByTeam(parsedTeamTuples, seperatedTeamTuples, "OwnTeamName")
+
+            for((team, rushReceiveTeamList) in seperatedRushReceiveTuples){
+                if(seperatedPassingTuples.containsKey(team)){
+                    passingTeamList = seperatedPassingTuples[team]!!
+                }
+                else{
+                    passingTeamList = mutableListOf()
+                }
+                renderTeamTables(passingTeamList, rushReceiveTeamList, seperatedTeamTuples[team])
+            }
         }
+
+        else {
+            for ((team, rushReceiveTeamList) in seperatedRushReceiveTuples) {
+                if(seperatedPassingTuples.containsKey(team)){
+                    passingTeamList = seperatedPassingTuples[team]!!
+                }
+                else{
+                    passingTeamList = mutableListOf()
+                }
+
+                renderTeamTables(passingTeamList, rushReceiveTeamList)
+            }
+        }
+
 
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun renderTeam(tuples : JSONArray){
-        val attrs = listOf("Week", "DayOfWeek", "Date", "OwnTeamName", "OwnPassingCompletions", "OwnPassingAttempts",
-            "OwnPassingYards", "OwnPassingTouchDowns", "OwnPassingInterceptions", "OwnPassingSacks",
-            "OwnPassingSackYards", "OwnRushAttempts", "OwnRushYards", "OwnRushTouchDowns", "OwnReceptions",
-            "OwnReceivingYards", "OwnReceivingTouchDowns", "OwnFumbles", "OwnFumblesLost",
-            "OwnFirstQuarter","OwnSecondQuarter","OwnThirdQuarter",
-            "OwnFourthQuarter","OwnOTTotal", "OwnTotalScore", "OwnFirstDowns", "OwnPenalties",
-            "OwnPenaltyYards", "OwnThirdDownConversions", "OwnThirdDownAttempts", "OwnFourthDownConversions",
-            "OwnFourthDownAttempts", "OwnToP",
-            "OppTeamName", "OppFirstQuarter","OppSecondQuarter","OppThirdQuarter",
-            "OppFourthQuarter","OppOTTotal", "OppTotalScore", "OppFirstDowns", "OppPenalties",
-            "OppPenaltyYards", "OppThirdDownConversions", "OppThirdDownAttempts", "OppFourthDownConversions",
-            "OppFourthDownAttempts", "OppToP")
-
-        var parsedTuples = mutableListOf<Map<String,String>>()
+    fun parsePassingTuples(passingTuples: JSONArray, parsedPassingTuples: MutableList<Map<String, String>>){
         var i = 0
-        while (i < tuples.length()) {
+        while (i < passingTuples.length()) {
+            val tuple : JSONObject = passingTuples.get(i) as JSONObject
+            val parsedTuple : Map<String, String> = mapOf(
+                "GameID" to tuple.getString("GameID"),
+                "Week" to tuple.getInt("Week").toString(),
+                "TeamName" to tuple.getString("TeamName"),
+                "Name" to tuple.getString("Name"),
+                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
+                "Completions" to tuple.getInt("Completions").toString(),
+                "Attempts" to tuple.getInt("Attempts").toString(),
+                "Yards" to tuple.getInt("Yards").toString(),
+                "TouchDowns" to tuple.getInt("TouchDowns").toString(),
+                "Interceptions" to tuple.getInt("Interceptions").toString(),
+                "Sacks" to tuple.getInt("Sacks").toString(),
+                "SackYards" to tuple.getInt("SackYards").toString(),
+                "PassLong" to tuple.getInt("PassLong").toString(),
+                "PasserRating" to tuple.getDouble("PasserRating").toString()
+            )
 
-            val tuple : JSONObject = tuples.get(i) as JSONObject
+            parsedPassingTuples.add(parsedTuple)
+
+            i++
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun parseRushReceiveTuples(rushReceiveTuples: JSONArray, parsedRushReceiveTuples: MutableList<Map<String, String>>){
+        var i = 0
+        while (i < rushReceiveTuples.length()) {
+            val tuple : JSONObject = rushReceiveTuples.get(i) as JSONObject
+            val parsedTuple : Map<String, String> = mapOf(
+                "GameID" to tuple.getString("GameID"),
+                "Week" to tuple.getInt("Week").toString(),
+                "TeamName" to tuple.getString("TeamName"),
+                "Name" to tuple.getString("Name"),
+                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
+                "RushAttempts" to tuple.getInt("RushAttempts").toString(),
+                "RushYards" to tuple.getInt("RushYards").toString(),
+                "RushTouchDowns" to tuple.getInt("RushTouchDowns").toString(),
+                "RushLong" to tuple.getInt("RushLong").toString(),
+                "Targets" to tuple.getInt("Targets").toString(),
+                "Receptions" to tuple.getInt("Receptions").toString(),
+                "ReceivingYards" to tuple.getInt("ReceivingYards").toString(),
+                "ReceivingTouchDowns" to tuple.getInt("ReceivingTouchDowns").toString(),
+                "Fumbles" to tuple.getInt("Fumbles").toString(),
+                "FumblesLost" to tuple.getInt("FumblesLost").toString(),
+            )
+
+            parsedRushReceiveTuples.add(parsedTuple)
+
+            i++
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun parseTeamTuples(teamTuples: JSONArray, parsedTeamTuples: MutableList<Map<String, String>>) {
+        var i = 0
+        while (i < teamTuples.length()) {
+
+            val tuple : JSONObject = teamTuples.get(i) as JSONObject
             val currentGamePassing = byGamePassing[tuple.getString("GameID") + " " + tuple.getString("OwnTeamName")]
             val currentGameRushReceive = byGameRushReceive[tuple.getString("GameID") + " " + tuple.getString("OwnTeamName")]
 
@@ -121,93 +209,177 @@ class StatisticsActivity : AppCompatActivity() {
                 "OppToP" to tuple.getInt("OppToP").toString(),
             )
 
-            parsedTuples.add(parsedTuple)
+            parsedTeamTuples.add(parsedTuple)
 
             i++
-        }
-
-        var tableTitle: TextView = TextView(this)
-        tableTitle.text = "Team Aggregate Info"
-        tableTitle.textAlignment = View.TEXT_ALIGNMENT_CENTER
-        tableTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Medium)
-
-        statsLayout.addView(tableTitle)
-
-        var teamTable: TableLayout = TableLayout(this)
-        var teamScrollView : HorizontalScrollView = HorizontalScrollView(this)
-        var scrollLinear : LinearLayout = LinearLayout(this)
-
-
-        scrollLinear.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-
-        var scrollViewParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        scrollViewParams.setMargins(20,20,20,20)
-        teamScrollView.layoutParams = scrollViewParams
-
-        teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
-
-        teamTable.setBackgroundColor(Color.BLACK)
-
-        scrollLinear.addView(teamTable)
-        teamScrollView.addView(scrollLinear)
-        statsLayout.addView(teamScrollView)
-
-        var row : TableRow = TableRow(this)
-
-        var rowLayoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT)
-        rowLayoutParams.setMargins(1, 1, 1, 0)
-        row.layoutParams = rowLayoutParams
-
-        for(attr in attrs){
-            row.addView(createCell(attr))
-        }
-
-        teamTable.addView(row)
-
-        for(tuple in parsedTuples){
-            row = TableRow(this)
-
-            for(attr in attrs){
-                row.addView(createCell(tuple[attr] as String))
-            }
-
-            teamTable.addView(row)
-            row.setBackgroundColor(Color.BLACK)
-
-
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun renderPassing(tuples: JSONArray){
+    fun seperateTuplesByTeam(parsedTuples: MutableList<Map<String, String>>,
+                             seperatedTuples: MutableMap<String, MutableList<Map<String, String>>>,
+                             attrName: String){
+
+        var lastTeam : String = ""
+        var currentTeam : String
+        var teamPlayerList: MutableList<Map<String, String>>
+
+        for(tuple in parsedTuples){
+            currentTeam = tuple[attrName].toString()
+
+            // If this team has not yet been encountered, create a new list for this teams player
+            // game logs
+            if(currentTeam != lastTeam){
+                teamPlayerList = mutableListOf(tuple)
+                seperatedTuples.put(currentTeam, teamPlayerList)
+                lastTeam = currentTeam
+            }
+
+            else{
+                teamPlayerList = seperatedTuples.get(lastTeam)!!
+                teamPlayerList.add(tuple)
+
+            }
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun renderTeamTables(passingTuples: MutableList<Map<String, String>>,
+                         rushReceiveTuples: MutableList<Map<String, String>>,
+                         teamTuples: MutableList<Map<String, String>>? = null){
+
+        renderPassing(passingTuples)
+        renderRushReceive(rushReceiveTuples)
+
+        if(teamTuples != null) {
+            renderTeam(teamTuples)
+        }
+
+
+
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun compilePassingByGame(tuples: MutableList<Map<String, String>>){
+        for(tuple in tuples) {
+
+            if (byGamePassing.containsKey(tuple["GameID"] + " " + tuple["TeamName"])) {
+                var currentGamePassing = byGamePassing[tuple["GameID"] + " " + tuple["TeamName"]]
+
+                currentGamePassing?.set(
+                    "Completions",
+                    currentGamePassing.get("Completions")!! + tuple["Completions"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "Attempts",
+                    currentGamePassing.get("Completions")!! + tuple["Attempts"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "Yards",
+                    currentGamePassing.get("Completions")!! + tuple["Yards"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "TouchDowns",
+                    currentGamePassing.get("Completions")!! + tuple["TouchDowns"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "Interceptions",
+                    currentGamePassing.get("Completions")!! + tuple["Interceptions"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "Sacks",
+                    currentGamePassing.get("Completions")!! + tuple["Sacks"]!!.toInt()
+                )
+                currentGamePassing?.set(
+                    "SackYards",
+                    currentGamePassing.get("Completions")!! + tuple["SackYards"]!!.toInt()
+                )
+
+            } else {
+                var currentGamePassing: MutableMap<String, Int> = mutableMapOf(
+                    "Completions" to tuple["Completions"]!!.toInt(),
+                    "Attempts" to tuple["Attempts"]!!.toInt(),
+                    "Yards" to tuple["Yards"]!!.toInt(),
+                    "TouchDowns" to tuple["TouchDowns"]!!.toInt(),
+                    "Interceptions" to tuple["Interceptions"]!!.toInt(),
+                    "Sacks" to tuple["Sacks"]!!.toInt(),
+                    "SackYards" to tuple["SackYards"]!!.toInt()
+                )
+
+                byGamePassing.put(tuple["GameID"] + " " + tuple["TeamName"], currentGamePassing)
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun compileRushReceiveByGame(tuples: MutableList<Map<String, String>>){
+
+        for(tuple in tuples) {
+
+            if (byGameRushReceive.containsKey(tuple["GameID"] + " " + tuple["TeamName"])) {
+                var currentGameRushReceive =
+                    byGameRushReceive[tuple["GameID"] + " " + tuple["TeamName"]]
+
+                currentGameRushReceive?.set(
+                    "RushAttempts",
+                    currentGameRushReceive.get("RushAttempts")!! + tuple["RushAttempts"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "RushYards",
+                    currentGameRushReceive.get("RushYards")!! + tuple["RushYards"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "RushTouchDowns",
+                    currentGameRushReceive.get("RushTouchDowns")!! + tuple["RushTouchDowns"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "Receptions",
+                    currentGameRushReceive.get("Receptions")!! + tuple["Receptions"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "ReceivingYards",
+                    currentGameRushReceive.get("ReceivingYards")!! + tuple["ReceivingYards"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "ReceivingTouchDowns",
+                    currentGameRushReceive.get("ReceivingTouchDowns")!! + tuple["ReceivingTouchDowns"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "Fumbles",
+                    currentGameRushReceive.get("Fumbles")!! + tuple["Fumbles"]!!.toInt()
+                )
+                currentGameRushReceive?.set(
+                    "FumblesLost",
+                    currentGameRushReceive.get("FumblesLost")!! + tuple["FumblesLost"]!!.toInt()
+                )
+
+            } else {
+                var currentGameRushReceive = mutableMapOf(
+                    "RushAttempts" to tuple["RushAttempts"]!!.toInt(),
+                    "RushYards" to tuple["RushYards"]!!.toInt(),
+                    "RushTouchDowns" to tuple["RushTouchDowns"]!!.toInt(),
+                    "Receptions" to tuple["Receptions"]!!.toInt(),
+                    "ReceivingYards" to tuple["ReceivingYards"]!!.toInt(),
+                    "ReceivingTouchDowns" to tuple["ReceivingTouchDowns"]!!.toInt(),
+                    "Fumbles" to tuple["Fumbles"]!!.toInt(),
+                    "FumblesLost" to tuple["FumblesLost"]!!.toInt()
+                )
+
+                byGameRushReceive.put(
+                    tuple["GameID"] + " " + tuple["TeamName"],
+                    currentGameRushReceive
+                )
+            }
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun renderPassing(tuples: MutableList<Map<String, String>>){
         val attrs = listOf( "Week", "TeamName", "Name", "OpposingTeamName", "Completions", "Attempts", "Yards", "TouchDowns", "Interceptions",
             "Sacks", "SackYards", "PassLong", "PasserRating")
-
-        var parsedTuples = mutableListOf<Map<String,String>>()
-        var i = 0
-        while (i < tuples.length()) {
-            val tuple : JSONObject = tuples.get(i) as JSONObject
-            val parsedTuple : Map<String, String> = mapOf(
-                "GameID" to tuple.getString("GameID"),
-                "Week" to tuple.getInt("Week").toString(),
-                "TeamName" to tuple.getString("TeamName"),
-                "Name" to tuple.getString("Name"),
-                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
-                "Completions" to tuple.getInt("Completions").toString(),
-                "Attempts" to tuple.getInt("Attempts").toString(),
-                "Yards" to tuple.getInt("Yards").toString(),
-                "TouchDowns" to tuple.getInt("TouchDowns").toString(),
-                "Interceptions" to tuple.getInt("Interceptions").toString(),
-                "Sacks" to tuple.getInt("Sacks").toString(),
-                "SackYards" to tuple.getInt("SackYards").toString(),
-                "PassLong" to tuple.getInt("PassLong").toString(),
-                "PasserRating" to tuple.getDouble("PasserRating").toString()
-            )
-
-            parsedTuples.add(parsedTuple)
-
-            i++
-        }
 
         var tableTitle: TextView = TextView(this)
         tableTitle.text = "Player Passing Info"
@@ -247,34 +419,8 @@ class StatisticsActivity : AppCompatActivity() {
 
         teamTable.addView(row)
 
-        for(tuple in parsedTuples) {
+        for(tuple in tuples) {
             row = TableRow(this)
-
-            if(byGamePassing.containsKey(tuple["GameID"] + " " + tuple["TeamName"])){
-                var currentGamePassing = byGamePassing[tuple["GameID"] + " " + tuple["TeamName"]]
-
-                currentGamePassing?.set("Completions", currentGamePassing.get("Completions")!! + tuple["Completions"]!!.toInt())
-                currentGamePassing?.set("Attempts", currentGamePassing.get("Completions")!! + tuple["Attempts"]!!.toInt())
-                currentGamePassing?.set("Yards", currentGamePassing.get("Completions")!! + tuple["Yards"]!!.toInt())
-                currentGamePassing?.set("TouchDowns", currentGamePassing.get("Completions")!! + tuple["TouchDowns"]!!.toInt())
-                currentGamePassing?.set("Interceptions", currentGamePassing.get("Completions")!! + tuple["Interceptions"]!!.toInt())
-                currentGamePassing?.set("Sacks", currentGamePassing.get("Completions")!! + tuple["Sacks"]!!.toInt())
-                currentGamePassing?.set("SackYards", currentGamePassing.get("Completions")!! + tuple["SackYards"]!!.toInt())
-
-            }
-
-            else{
-                var currentGamePassing = mutableMapOf(
-                    "Completions" to tuple["Completions"]!!.toInt(),
-                    "Attempts" to tuple["Attempts"]!!.toInt(),
-                    "Yards" to tuple["Yards"]!!.toInt(),
-                    "TouchDowns" to tuple["TouchDowns"]!!.toInt(),
-                    "Interceptions" to tuple["Interceptions"]!!.toInt(),
-                    "Sacks" to tuple["Sacks"]!!.toInt(),
-                    "SackYards" to tuple["SackYards"]!!.toInt())
-
-                byGamePassing.put(tuple["GameID"] + " " + tuple["TeamName"], currentGamePassing)
-            }
 
             for(attr in attrs){
                 row.addView(createCell(tuple[attr] as String))
@@ -288,36 +434,9 @@ class StatisticsActivity : AppCompatActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun renderRushReceive(tuples: JSONArray){
+    fun renderRushReceive(tuples: MutableList<Map<String, String>>){
         val attrs = listOf( "Week", "TeamName", "Name", "OpposingTeamName", "RushAttempts", "RushYards", "RushTouchDowns", "RushLong",
             "Targets", "Receptions", "ReceivingYards", "ReceivingTouchDowns", "Fumbles", "FumblesLost")
-
-        var parsedTuples = mutableListOf<Map<String,String>>()
-        var i = 0
-        while (i < tuples.length()) {
-            val tuple : JSONObject = tuples.get(i) as JSONObject
-            val parsedTuple : Map<String, String> = mapOf(
-                "GameID" to tuple.getString("GameID"),
-                "Week" to tuple.getInt("Week").toString(),
-                "TeamName" to tuple.getString("TeamName"),
-                "Name" to tuple.getString("Name"),
-                "OpposingTeamName" to tuple.getString("OpposingTeamName"),
-                "RushAttempts" to tuple.getInt("RushAttempts").toString(),
-                "RushYards" to tuple.getInt("RushYards").toString(),
-                "RushTouchDowns" to tuple.getInt("RushTouchDowns").toString(),
-                "RushLong" to tuple.getInt("RushLong").toString(),
-                "Targets" to tuple.getInt("Targets").toString(),
-                "Receptions" to tuple.getInt("Receptions").toString(),
-                "ReceivingYards" to tuple.getInt("ReceivingYards").toString(),
-                "ReceivingTouchDowns" to tuple.getInt("ReceivingTouchDowns").toString(),
-                "Fumbles" to tuple.getInt("Fumbles").toString(),
-                "FumblesLost" to tuple.getInt("FumblesLost").toString(),
-            )
-
-            parsedTuples.add(parsedTuple)
-
-            i++
-        }
 
         var tableTitle: TextView = TextView(this)
         tableTitle.text = "Player Rushing and Receiving Info"
@@ -357,36 +476,8 @@ class StatisticsActivity : AppCompatActivity() {
 
         teamTable.addView(row)
 
-        for(tuple in parsedTuples) {
+        for(tuple in tuples) {
             row = TableRow(this)
-
-            if(byGameRushReceive.containsKey(tuple["GameID"] + " " + tuple["TeamName"])){
-                var currentGameRushReceive = byGameRushReceive[tuple["GameID"] + " " + tuple["TeamName"]]
-
-                currentGameRushReceive?.set("RushAttempts", currentGameRushReceive.get("RushAttempts")!! + tuple["RushAttempts"]!!.toInt())
-                currentGameRushReceive?.set("RushYards", currentGameRushReceive.get("RushYards")!! + tuple["RushYards"]!!.toInt())
-                currentGameRushReceive?.set("RushTouchDowns", currentGameRushReceive.get("RushTouchDowns")!! + tuple["RushTouchDowns"]!!.toInt())
-                currentGameRushReceive?.set("Receptions", currentGameRushReceive.get("Receptions")!! + tuple["Receptions"]!!.toInt())
-                currentGameRushReceive?.set("ReceivingYards", currentGameRushReceive.get("ReceivingYards")!! + tuple["ReceivingYards"]!!.toInt())
-                currentGameRushReceive?.set("ReceivingTouchDowns", currentGameRushReceive.get("ReceivingTouchDowns")!! + tuple["ReceivingTouchDowns"]!!.toInt())
-                currentGameRushReceive?.set("Fumbles", currentGameRushReceive.get("Fumbles")!! + tuple["Fumbles"]!!.toInt())
-                currentGameRushReceive?.set("FumblesLost", currentGameRushReceive.get("FumblesLost")!! + tuple["FumblesLost"]!!.toInt())
-
-            }
-
-            else{
-                var currentGameRushReceive = mutableMapOf(
-                    "RushAttempts" to tuple["RushAttempts"]!!.toInt(),
-                    "RushYards" to tuple["RushYards"]!!.toInt(),
-                    "RushTouchDowns" to tuple["RushTouchDowns"]!!.toInt(),
-                    "Receptions" to tuple["Receptions"]!!.toInt(),
-                    "ReceivingYards" to tuple["ReceivingYards"]!!.toInt(),
-                    "ReceivingTouchDowns" to tuple["ReceivingTouchDowns"]!!.toInt(),
-                    "Fumbles" to tuple["Fumbles"]!!.toInt(),
-                    "FumblesLost" to tuple["FumblesLost"]!!.toInt())
-
-                byGameRushReceive.put(tuple["GameID"] + " " + tuple["TeamName"], currentGameRushReceive)
-            }
 
             for(attr in attrs) {
                 row.addView(createCell(tuple[attr] as String))
@@ -395,6 +486,75 @@ class StatisticsActivity : AppCompatActivity() {
             teamTable.addView(row)
             row.setBackgroundColor(Color.BLACK)
             //rowLayoutParams.setMargins(10,10, 10, 10)
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun renderTeam(tuples : MutableList<Map<String, String>>){
+        val attrs = listOf("Week", "DayOfWeek", "Date", "OwnTeamName", "OwnPassingCompletions", "OwnPassingAttempts",
+            "OwnPassingYards", "OwnPassingTouchDowns", "OwnPassingInterceptions", "OwnPassingSacks",
+            "OwnPassingSackYards", "OwnRushAttempts", "OwnRushYards", "OwnRushTouchDowns", "OwnReceptions",
+            "OwnReceivingYards", "OwnReceivingTouchDowns", "OwnFumbles", "OwnFumblesLost",
+            "OwnFirstQuarter","OwnSecondQuarter","OwnThirdQuarter",
+            "OwnFourthQuarter","OwnOTTotal", "OwnTotalScore", "OwnFirstDowns", "OwnPenalties",
+            "OwnPenaltyYards", "OwnThirdDownConversions", "OwnThirdDownAttempts", "OwnFourthDownConversions",
+            "OwnFourthDownAttempts", "OwnToP",
+            "OppTeamName", "OppFirstQuarter","OppSecondQuarter","OppThirdQuarter",
+            "OppFourthQuarter","OppOTTotal", "OppTotalScore", "OppFirstDowns", "OppPenalties",
+            "OppPenaltyYards", "OppThirdDownConversions", "OppThirdDownAttempts", "OppFourthDownConversions",
+            "OppFourthDownAttempts", "OppToP")
+
+
+        var tableTitle: TextView = TextView(this)
+        tableTitle.text = "Team Aggregate Info"
+        tableTitle.textAlignment = View.TEXT_ALIGNMENT_CENTER
+        tableTitle.setTextAppearance(R.style.TextAppearance_AppCompat_Medium)
+
+        statsLayout.addView(tableTitle)
+
+        var teamTable: TableLayout = TableLayout(this)
+        var teamScrollView : HorizontalScrollView = HorizontalScrollView(this)
+        var scrollLinear : LinearLayout = LinearLayout(this)
+
+
+        scrollLinear.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        var scrollViewParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        scrollViewParams.setMargins(20,20,20,20)
+        teamScrollView.layoutParams = scrollViewParams
+
+        teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
+
+        teamTable.setBackgroundColor(Color.BLACK)
+
+        scrollLinear.addView(teamTable)
+        teamScrollView.addView(scrollLinear)
+        statsLayout.addView(teamScrollView)
+
+        var row : TableRow = TableRow(this)
+
+        var rowLayoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT,TableLayout.LayoutParams.WRAP_CONTENT)
+        rowLayoutParams.setMargins(1, 1, 1, 0)
+        row.layoutParams = rowLayoutParams
+
+        for(attr in attrs){
+            row.addView(createCell(attr))
+        }
+
+        teamTable.addView(row)
+
+        for(tuple in tuples){
+            row = TableRow(this)
+
+            for(attr in attrs){
+                row.addView(createCell(tuple[attr] as String))
+            }
+
+            teamTable.addView(row)
+            row.setBackgroundColor(Color.BLACK)
+
+
         }
     }
 
@@ -408,6 +568,8 @@ class StatisticsActivity : AppCompatActivity() {
         tv.layoutParams = tvLayoutParams
         return tv
     }
+
+
 
 
 }
