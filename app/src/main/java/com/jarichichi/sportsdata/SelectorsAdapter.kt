@@ -144,7 +144,28 @@ class SelectorsAdapter(
 
                     // If only one item can be selected, select it
                     if(current.isMultiSelect[idx] == 1){
-                        current.itemsSelected[idx].set(0, item)
+
+                        // INITIAL DEFAULT POSITION BEING SELECTED IS SPECIAL CASE
+                        if(current.itemsSelected[idx].size == 1){
+                            current.itemsSelected[idx].add(item)
+                        }
+                        else{
+                            current.itemsSelected[idx][1] = item
+                        }
+
+                        if(current.selectorType == "PLAYER_PLAYING" && idx == 0){
+
+                            // SELECTION OF NEW POSITION MEANS PLAYERS NEED TO BE DESELECTED
+                            current.itemsSelected[1] = mutableListOf("")
+
+                            // KEEP UPDATED WHEN POSITION IS ADDED / REMOVED
+                            // If a position was selected, the player drop selections need to be updated
+                            SelectorFillers.fillMultipleTeams(context,
+                                current.itemView?.findViewById<Spinner>(R.id.sel_drop_two_two),
+                                current, cards.get(0).itemsSelected[0])
+
+                        }
+
 
                         if ((current.selectorType == "SELECT_PLAYER")
                             && (current.itemsSelected[0][0] != "" && current.itemsSelected[1][0] != "")
@@ -162,7 +183,7 @@ class SelectorsAdapter(
 
 
                     //Multi selection logic
-                    else {
+                    else if(current.isMultiSelect[idx] > 1){
                         if (current.itemsSelected[idx].contains(item)) {
                             current.itemsSelected[idx].remove(item)
                         }
@@ -183,15 +204,12 @@ class SelectorsAdapter(
                                 }
                             }
                         }
-
-                        // KEEP UPDATED WHEN POSITION IS ADDED / REMOVED
-                        if(current.selectorType == "PLAYER_PLAYING" && idx == 0){
-                            // If a position was selected, the player drop selections need to be updated
-                            SelectorFillers.fillMultipleTeams(context,
-                                current.itemView?.findViewById<Spinner>(R.id.sel_drop_two_two),
-                                current, cards.get(0).itemsSelected[0])
-                        }
                     }
+
+                    // INITIALLY CERTAIN DROPDOWNS NEED NOTHING SELECTED, THIS ALLOWS THIS FEATURE
+                    else if(current.selectorType == "SELECT_POSITION" && idx == 1){
+                            current.isMultiSelect = arrayOf(2, 4)
+                        }
 
 
                 }

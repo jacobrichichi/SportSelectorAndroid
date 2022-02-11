@@ -13,6 +13,8 @@ import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.jarichichi.sportsdata.Constants.Companion.SELECTORS_KEY
 import models.Selector
 import models.SelectorList
@@ -23,6 +25,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var submitButton: Button
     private lateinit var selectorList: SelectorList
     private lateinit var selectorsAdapter: SelectorsAdapter
+    private lateinit var userAuthButton: Button
+    private lateinit var usernameText: TextView
+
+    private lateinit var fAuth: FirebaseAuth
+    private lateinit var fStore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +38,11 @@ class MainActivity : AppCompatActivity() {
         selectorsView = findViewById(R.id.selectors)
         addButton = findViewById(R.id.adding_button)
         submitButton = findViewById(R.id.submit_button)
+        userAuthButton = findViewById(R.id.main_userauth_button)
+        usernameText = findViewById(R.id.username_textfield)
+
+        fAuth = FirebaseAuth.getInstance()
+        fStore = FirebaseFirestore.getInstance()
 
         selectorList = SelectorList()
 
@@ -40,6 +52,27 @@ class MainActivity : AppCompatActivity() {
         selectorsView.setHasFixedSize(true)
 
         selectorsView.layoutManager = GridLayoutManager(this, 1)
+
+        // User is already signed in, button should allow them to sign out
+        if(fAuth.currentUser != null){
+            userAuthButton.text = "Sign Out"
+
+            userAuthButton.setOnClickListener {
+                fAuth.signOut()
+                finish()
+                this.startActivity(getIntent())
+            }
+        }
+
+        // if user isn't already logged in, button should allow them to do so
+        else {
+            userAuthButton.text = "Sign In"
+
+            userAuthButton.setOnClickListener {
+                this.startActivity(Intent(this, LoginActivity::class.java))
+                finish()
+            }
+        }
 
         addButton.setOnClickListener {
 
@@ -56,9 +89,9 @@ class MainActivity : AppCompatActivity() {
 
             else{
                 typeBuilder.setTitle("And what conditions would you like?")
-                options = arrayOf("When Against Team", "When Against Player", "Temperature",
-                    "Winning Streak", "Losing Streak", "Certain Level of Defense", "This Teammate Is Playing",
-                    "This Teammate Is Not Playing")
+                options = arrayOf("When Against Team", /*"When Against Player",*/ "Temperature",
+                    /*"Winning Streak", "Losing Streak", "Certain Level of Defense",*/ "This Teammate Is Playing",
+                    /*"This Teammate Is Not Playing"*/)
             }
 
 
@@ -77,14 +110,14 @@ class MainActivity : AppCompatActivity() {
                     when(type_spinner.getSelectedItem()){
                         "Teams" -> selectorList.addNewSelector("SELECT_TEAM", arrayOf(6),1)
                         "Players" -> selectorList.addNewSelector("SELECT_PLAYER", arrayOf(1, 1, 20), 3)
-                        "Positions" -> selectorList.addNewSelector("SELECT_POSITION",arrayOf(2, 4),  2)
+                        "Positions" -> selectorList.addNewSelector("SELECT_POSITION", arrayOf(2, 0),  2)
                         "When Against Team" -> selectorList.addNewSelector("AGAINST_TEAM", arrayOf(6),  1)
                         "Temperature" -> selectorList.addNewSelector("TEMPERATURE", arrayOf(1, 1),  2)
-                        "Winning Streak" -> selectorList.addNewSelector("WINNING_STREAK", arrayOf(1), 1)
-                        "Losing Streak" -> selectorList.addNewSelector("LOSING_STREAK", arrayOf(1),  1)
-                        "Certain Level of Defense" -> selectorList.addNewSelector("DEFENSIVE_RATING", arrayOf(1),  1)
-                        "This Teammate Is Playing" -> selectorList.addNewSelector("PLAYER_PLAYING", arrayOf(3, 3),  2)
-                        "This Teammate Is Not Playing" -> selectorList.addNewSelector("PLAYER_ABSENT", arrayOf(3),  3)
+                        //"Winning Streak" -> selectorList.addNewSelector("WINNING_STREAK", arrayOf(1), 1)
+                        //"Losing Streak" -> selectorList.addNewSelector("LOSING_STREAK", arrayOf(1),  1)
+                        //"Certain Level of Defense" -> selectorList.addNewSelector("DEFENSIVE_RATING", arrayOf(1),  1)
+                        "This Teammate Is Playing" -> selectorList.addNewSelector("PLAYER_PLAYING", arrayOf(1, 4),  2)
+                        //"This Teammate Is Not Playing" -> selectorList.addNewSelector("PLAYER_ABSENT", arrayOf(1, 4),  2)
                     }
 
                     selectorsAdapter.numSelectors += 1

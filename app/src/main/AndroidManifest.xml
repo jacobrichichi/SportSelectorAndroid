@@ -13,6 +13,12 @@
         android:theme="@style/Theme.SportsData"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".LoginActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="true" />
+        <activity
             android:name=".StatisticsActivity"
             android:exported="true" />
         <activity

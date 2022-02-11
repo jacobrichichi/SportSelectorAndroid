@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "961049965416",
+    "project_id": "sports-data-15880",
+    "storage_bucket": "sports-data-15880.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961049965416:android:9c8e6b5b8618da8f2d1cdd",
+        "android_client_info": {
+          "package_name": "com.jarichichi.sportsdata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "961049965416-g3dn67hil4c6u7b0t21f873rl63gp1u3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDN-lAX5k2x45nPUBuNZj2ceU5wbQCjxo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "961049965416-g3dn67hil4c6u7b0t21f873rl63gp1u3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
