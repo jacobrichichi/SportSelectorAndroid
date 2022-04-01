@@ -13,7 +13,8 @@
         android:layout_margin="5dp"
         android:gravity="center"
         android:text="sdfsfs"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_one_one"
@@ -28,6 +29,7 @@
         android:layout_height="50dp"
         android:layout_margin="5dp"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
 </com.google.android.flexbox.FlexboxLayout>

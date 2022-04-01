@@ -401,7 +401,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
-        teamTable.setBackgroundColor(Color.BLACK)
+        teamTable.setBackgroundColor(Color.WHITE)
 
         scrollLinear.addView(teamTable)
         teamScrollView.addView(scrollLinear)
@@ -428,7 +428,7 @@ class StatisticsActivity : AppCompatActivity() {
             }
 
             teamTable.addView(row)
-            row.setBackgroundColor(Color.BLACK)
+            row.setBackgroundColor(Color.WHITE)
             //rowLayoutParams.setMargins(10,10, 10, 10)
         }
     }
@@ -458,7 +458,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
-        teamTable.setBackgroundColor(Color.BLACK)
+        teamTable.setBackgroundColor(Color.WHITE)
 
         scrollLinear.addView(teamTable)
         teamScrollView.addView(scrollLinear)
@@ -484,7 +484,7 @@ class StatisticsActivity : AppCompatActivity() {
             }
 
             teamTable.addView(row)
-            row.setBackgroundColor(Color.BLACK)
+            row.setBackgroundColor(Color.WHITE)
             //rowLayoutParams.setMargins(10,10, 10, 10)
         }
     }
@@ -526,7 +526,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         teamTable.layoutParams = TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT)
 
-        teamTable.setBackgroundColor(Color.BLACK)
+        teamTable.setBackgroundColor(Color.WHITE)
 
         scrollLinear.addView(teamTable)
         teamScrollView.addView(scrollLinear)

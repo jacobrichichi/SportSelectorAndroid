@@ -53,7 +53,7 @@ class RequestRouter {
                                 return view
                             }
                         }.also { adapter ->
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                            adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
                             team_drop.adapter = adapter
                         }
 
@@ -162,8 +162,8 @@ class RequestRouter {
                 override fun getParams(): Map<String, String>{
 
                     var params = HashMap<String, String>()
-                    params.put("Team", current.itemsSelected[0][0])
-                    params.put("Position", current.itemsSelected[1][0])
+                    params.put("Team", current.itemsSelected[0][1])
+                    params.put("Position", current.itemsSelected[1][1])
                     return params
                 }
             }

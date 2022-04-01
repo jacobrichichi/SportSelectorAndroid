@@ -13,7 +13,8 @@
         android:gravity="center_horizontal"
         android:text="nksdjds"
         android:textAlignment="viewEnd"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_three_one"
@@ -24,7 +25,8 @@
         android:id="@+id/sel_text_three_two"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_three_two"
@@ -35,7 +37,8 @@
         android:id="@+id/sel_text_three_three"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_three_three"
@@ -46,6 +49,7 @@
         android:id="@+id/sel_text_three_four"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
 </com.google.android.flexbox.FlexboxLayout>

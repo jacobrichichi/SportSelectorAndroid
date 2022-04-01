@@ -5,8 +5,9 @@
     android:id="@+id/stats_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#322E2E"
     android:orientation="vertical"
-    tools:context=".StatisticsActivity" >
+    tools:context=".StatisticsActivity">
 
     <LinearLayout
         android:id="@+id/stats_layout"

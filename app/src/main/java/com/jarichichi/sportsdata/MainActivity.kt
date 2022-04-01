@@ -13,7 +13,10 @@ import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jarichichi.sportsdata.Constants.Companion.SELECTORS_KEY
 import models.Selector
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fAuth: FirebaseAuth
     private lateinit var fStore: FirebaseFirestore
 
+    private lateinit var userID: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         addButton = findViewById(R.id.adding_button)
         submitButton = findViewById(R.id.submit_button)
         userAuthButton = findViewById(R.id.main_userauth_button)
-        usernameText = findViewById(R.id.username_textfield)
+        usernameText = findViewById(R.id.username_text)
 
         fAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
@@ -53,9 +58,21 @@ class MainActivity : AppCompatActivity() {
 
         selectorsView.layoutManager = GridLayoutManager(this, 1)
 
+
+        val currentUser = fAuth.currentUser
         // User is already signed in, button should allow them to sign out
         if(fAuth.currentUser != null){
             userAuthButton.text = "Sign Out"
+            userID = fAuth.currentUser!!.uid
+
+            val documentReference = fStore.collection("users").document(userID)
+            documentReference.addSnapshotListener { value, error ->
+                if(fAuth.currentUser != null){
+                    val uText = value!!.getString("username")
+                    usernameText.text = value!!.getString("username")
+                }
+            }
+
 
             userAuthButton.setOnClickListener {
                 fAuth.signOut()
@@ -144,3 +161,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
+

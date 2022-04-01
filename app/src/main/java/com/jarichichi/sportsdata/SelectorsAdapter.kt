@@ -168,7 +168,7 @@ class SelectorsAdapter(
 
 
                         if ((current.selectorType == "SELECT_PLAYER")
-                            && (current.itemsSelected[0][0] != "" && current.itemsSelected[1][0] != "")
+                            && (current.itemsSelected[0].size != 1 && current.itemsSelected[1].size != 1)
                             && (emptyDrop != null)
                         ) {
                             SelectorFillers.fillSelectPlayer(context, emptyDrop, current, current.itemsSelected[0][0])

@@ -10,7 +10,8 @@
         android:id="@+id/sel_text_two_one"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_two_one"
@@ -22,7 +23,8 @@
         android:id="@+id/sel_text_two_two"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
     <Spinner
         android:id="@+id/sel_drop_two_two"
@@ -34,7 +36,8 @@
         android:id="@+id/sel_text_two_three"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#FFFFFF" />
 
 
 </com.google.android.flexbox.FlexboxLayout>

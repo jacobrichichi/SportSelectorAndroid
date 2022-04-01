@@ -80,12 +80,12 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
 
                         userID = fAuth.currentUser!!.uid
-                        val documentRefenence: DocumentReference = fStore.collection("users").document("userID")
+                        val documentReference: DocumentReference = fStore.collection("users").document(userID)
                         val user: Map<String, String> =
                             mapOf("username" to username,
                                 "email" to email)
 
-                        documentRefenence.set(user)
+                        documentReference.set(user)
                         this.startActivity(Intent(this, MainActivity::class.java))
                     } else {
                         errorText.text = task.exception!!.message
