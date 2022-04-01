@@ -23,4 +23,8 @@ class SelectorList {
         }
     }
 
+    fun removeAllSelectors(){
+        selectors = mutableListOf()
+    }
+
 }

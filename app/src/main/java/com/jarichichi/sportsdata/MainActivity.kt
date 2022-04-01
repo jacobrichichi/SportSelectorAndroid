@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var selectorsView: RecyclerView
     private lateinit var addButton: Button
     private lateinit var submitButton: Button
+    private lateinit var refreshButton: Button
     private lateinit var selectorList: SelectorList
     private lateinit var selectorsAdapter: SelectorsAdapter
     private lateinit var userAuthButton: Button
@@ -44,10 +45,13 @@ class MainActivity : AppCompatActivity() {
         addButton = findViewById(R.id.adding_button)
         submitButton = findViewById(R.id.submit_button)
         userAuthButton = findViewById(R.id.main_userauth_button)
+        refreshButton = findViewById(R.id.refresh_button)
         usernameText = findViewById(R.id.username_text)
 
         fAuth = FirebaseAuth.getInstance()
         fStore = FirebaseFirestore.getInstance()
+
+
 
         selectorList = SelectorList()
 
@@ -157,6 +161,12 @@ class MainActivity : AppCompatActivity() {
             //Logic to begin creating the SQL Query + send it to the backend
             SelectorFillers.createCustomQuery(this, selectors)
 
+        }
+
+        refreshButton.setOnClickListener {
+            selectorList.removeAllSelectors()
+            selectorsAdapter.numSelectors = 0
+            selectorsAdapter.notifyDataSetChanged()
         }
 
     }

@@ -1,5 +1,6 @@
 package com.jarichichi.sportsdata
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,8 @@ import org.json.JSONObject
 class StatisticsActivity : AppCompatActivity() {
 
     private lateinit var statsLayout: LinearLayout
+    private lateinit var backButton: Button
+
     private var byGamePassing: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
     private var byGameRushReceive: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
     private var bySeasonPassing: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
@@ -26,6 +29,12 @@ class StatisticsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
         statsLayout = findViewById<LinearLayout>(R.id.stats_layout)
+        backButton = findViewById<Button>(R.id.stats_back_button)
+
+        backButton.setOnClickListener {
+            this.startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
 
         val response = intent.getStringExtra(SELECTORS_KEY)
 
